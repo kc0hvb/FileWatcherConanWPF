@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Configuration;
+using System.IO;
+using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,60 +9,40 @@ using System.Windows.Forms;
 
 namespace FileWatcherConanWPF
 {
-    static class Program
+    public class Program
     {
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        public static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new ConanModWatcher());
+        }
+
+        public void MainPortion()
+        {
+            MainProgram MP = new MainProgram();
             try
-            {
+            {                
                 while (true)
                 {
-                    MainProgram.processFileWatcher();
+                    List<string> value = MP.ProcessFileWatcher();
+                    ConanModWatcher Mod = new ConanModWatcher();
+                    Mod.TextBox1(value);
                 }
             }
             catch (Exception ex)
-            {
-                MainProgram.errorLogCreation(ex);
+            {                
+                MP.ErrorLogCreation(ex);
             }
         }
     }
     public class MainProgram
     { 
-        public static void MinimizeToTray()
-        {
-
-            NotifyIcon trayIcon = new NotifyIcon();
-            trayIcon.Text = "My application";
-            trayIcon.Icon = 
-
-                // Add menu to tray icon and show it.
-            trayIcon.ContextMenu = trayMenu;
-            trayIcon.Visible = true;
-
-            Visible = false; // Hide form window.
-            ShowInTaskbar = false; // Remove from taskbar.
-        }
-        private void Form1_Resize(object sender, System.EventArgs e)
-        {
-            if (FormWindowState.Minimized == WindowState)
-                Hide();
-        }
-
-        private void notifyIcon1_DoubleClick(object sender,
-                                     System.EventArgs e)
-        {
-            Show();
-            WindowState = FormWindowState.Normal;
-        }
-
-        public static void processFileWatcher()
+        public List<string> ProcessFileWatcher()
         {
 
             string sSource = ConfigurationManager.AppSettings["PAK_Location"];
@@ -67,6 +50,8 @@ namespace FileWatcherConanWPF
             //string[] files = System.IO.Directory.GetFiles(sSource.ToString, "*.pak", SearchOption.AllDirectories);
 
             string[] fileEntries = System.IO.Directory.GetFiles(sSource, "*.*", System.IO.SearchOption.AllDirectories);
+
+            var lTextBox = new List<string>();
 
             if (!Directory.Exists(sTarget))
             {
@@ -87,34 +72,32 @@ namespace FileWatcherConanWPF
                         if (fFileInfoSource.LastWriteTimeUtc > fFileInfoDest.LastWriteTimeUtc)
                         {
                             File.Copy(fileName, sFileNameDest, true);
-                            Console.WriteLine($"File: {sFileName} was updated.");
-                        }
-                        else
-                        {
-
+                            //Console.WriteLine($"File: {sFileName} was updated.");
+                            lTextBox.Add($"File: {sFileName} was updated.");
                         }
                     }
                     else
                     {
                         File.Copy(fileName, sFileNameDest, true);
-                        Console.WriteLine($"File: {sFileName} did not exist but exists now.");
+                        //Console.WriteLine($"File: {sFileName} did not exist but exists now.");
+                        lTextBox.Add($"File: {sFileName} did not exist but exists now.");
                     }
                 }
             }
 
             Thread.Sleep(Int32.Parse(ConfigurationManager.AppSettings["Sleep_Time"]));
-            return;
+            return lTextBox;
         }
 
 
-        public static void errorLogCreation(Exception ex)
+        public void ErrorLogCreation(Exception ex)
         {
             string sErrorFilePath = AppDomain.CurrentDomain.BaseDirectory + $"Error Log {DateTime.Today.Millisecond}.txt";
             using (StreamWriter file =
             new StreamWriter(sErrorFilePath))
             {
                 file.WriteLine(ex);
-            }
+            }            
         }
 
 
