@@ -22,21 +22,19 @@ namespace FileWatcherConanWPF
             Application.Run(new ConanModWatcher());
         }
 
-        public void MainPortion()
+        public List<string> MainPortion()
         {
             MainProgram MP = new MainProgram();
             try
             {                
-                while (true)
-                {
-                    List<string> value = MP.ProcessFileWatcher();
-                    ConanModWatcher Mod = new ConanModWatcher();
-                    Mod.TextBox1(value);
-                }
+                List<string> value = MP.ProcessFileWatcher();
+                return value;
             }
             catch (Exception ex)
             {                
                 MP.ErrorLogCreation(ex);
+                var lTextBox = new List<string>();
+                return lTextBox;
             }
         }
     }
@@ -84,8 +82,6 @@ namespace FileWatcherConanWPF
                     }
                 }
             }
-
-            Thread.Sleep(Int32.Parse(ConfigurationManager.AppSettings["Sleep_Time"]));
             return lTextBox;
         }
 
