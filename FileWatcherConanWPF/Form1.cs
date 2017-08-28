@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Timers;
 using System.Threading;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -38,19 +39,15 @@ namespace FileWatcherConanWPF
         private void button1_Click_1(object sender, EventArgs e)
         {
             button1.Enabled = false;
-            var worker = new BackgroundWorker();
-            worker.WorkerReportsProgress = false;
-            worker.WorkerSupportsCancellation = false;
-            worker.DoWork += backgroundWorker1_DoWork;
-            worker.RunWorkerAsync();
+            System.Timers.Timer aTimer = new System.Timers.Timer();
+            aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            aTimer.Interval = Int32.Parse(ConfigurationManager.AppSettings["Sleep_Time"]);
+            aTimer.Enabled = true;
         }
-
-        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
             if (button1.Enabled == false)
             {
-                while (true)
-                {
                     Program Pro = new Program();
                     var value = Pro.MainPortion();
                     string text = (String.Join(Environment.NewLine, value) + "\r\n");
@@ -59,7 +56,6 @@ namespace FileWatcherConanWPF
                     else SetText(text);
                     Application.DoEvents();
                     Thread.Sleep(Int32.Parse(ConfigurationManager.AppSettings["Sleep_Time"]));
-                }
             }
         }
 
@@ -94,5 +90,6 @@ namespace FileWatcherConanWPF
         {
             Application.Exit();
         }
+        
     }
 }

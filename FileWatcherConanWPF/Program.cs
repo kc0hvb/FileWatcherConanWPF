@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Timers;
 using System.Configuration;
 using System.IO;
+using System.Collections.ObjectModel;
 using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,8 +41,9 @@ namespace FileWatcherConanWPF
         }
     }
     public class MainProgram
-    { 
-        public List<string> ProcessFileWatcher()
+    {
+        private ObservableCollection<string> collection;
+        public ObservableCollection<string> ProcessFileWatcher()
         {
 
             string sSource = ConfigurationManager.AppSettings["PAK_Location"];
@@ -49,7 +52,7 @@ namespace FileWatcherConanWPF
 
             string[] fileEntries = System.IO.Directory.GetFiles(sSource, "*.*", System.IO.SearchOption.AllDirectories);
 
-            var lTextBox = new List<string>();
+            collection = new ObservableCollection<string>();
 
             if (!Directory.Exists(sTarget))
             {
@@ -71,18 +74,20 @@ namespace FileWatcherConanWPF
                         {
                             File.Copy(fileName, sFileNameDest, true);
                             //Console.WriteLine($"File: {sFileName} was updated.");
-                            lTextBox.Add($"File: {sFileName} was updated.");
+                            collection.Add($"File: {sFileName} was updated.");
+                            //lTextBox.Add($"File: {sFileName} was updated.");
                         }
                     }
                     else
                     {
                         File.Copy(fileName, sFileNameDest, true);
                         //Console.WriteLine($"File: {sFileName} did not exist but exists now.");
-                        lTextBox.Add($"File: {sFileName} did not exist but exists now.");
+                        //lTextBox.Add($"File: {sFileName} did not exist but exists now.");
+                        collection.Add($"File: {sFileName} did not exist but exists now.");
                     }
                 }
             }
-            return lTextBox;
+            return collection;
         }
 
 
