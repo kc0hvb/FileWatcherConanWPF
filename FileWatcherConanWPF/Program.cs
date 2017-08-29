@@ -24,18 +24,18 @@ namespace FileWatcherConanWPF
             Application.Run(new ConanModWatcher());
         }
 
-        public List<string> MainPortion()
+        public ObservableCollection<string> MainPortion()
         {
             MainProgram MP = new MainProgram();
             try
             {                
-                List<string> value = MP.ProcessFileWatcher();
+                var value = MP.ProcessFileWatcher();
                 return value;
             }
             catch (Exception ex)
             {                
                 MP.ErrorLogCreation(ex);
-                var lTextBox = new List<string>();
+                var lTextBox = new ObservableCollection<string>();
                 return lTextBox;
             }
         }
