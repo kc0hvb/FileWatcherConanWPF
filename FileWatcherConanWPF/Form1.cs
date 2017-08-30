@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Timers;
 using System.Threading;
 using System.Collections.Generic;
@@ -90,6 +91,27 @@ namespace FileWatcherConanWPF
         {
             Application.Exit();
         }
-        
+
+        private void checkedListBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            FillCheckBoxList();
+        }
+
+        private void FillCheckBoxList()
+        {
+            string sTarget = ConfigurationManager.AppSettings["PAK_Target_Location"];
+            string[] fileEntries = Directory.GetFiles(sTarget, "*.*", System.IO.SearchOption.AllDirectories);
+            foreach (string fileName in fileEntries)
+            {
+                if (fileName.Contains(".pak"))
+                {
+                    checkedListBox1.Items.Add(fileName);
+                }
+            }
+            foreach (Control aControl in this.Controls)
+            {
+                this.checkedListBox1.Items.Add(aControl, false);
+            }
+        }
     }
 }

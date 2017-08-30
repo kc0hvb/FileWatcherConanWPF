@@ -45,12 +45,11 @@ namespace FileWatcherConanWPF
         private ObservableCollection<string> collection;
         public ObservableCollection<string> ProcessFileWatcher()
         {
-
             string sSource = ConfigurationManager.AppSettings["PAK_Location"];
             string sTarget = ConfigurationManager.AppSettings["PAK_Target_Location"];
             //string[] files = System.IO.Directory.GetFiles(sSource.ToString, "*.pak", SearchOption.AllDirectories);
 
-            string[] fileEntries = System.IO.Directory.GetFiles(sSource, "*.*", System.IO.SearchOption.AllDirectories);
+            string[] fileEntries = Directory.GetFiles(sSource, "*.*", System.IO.SearchOption.AllDirectories);
 
             collection = new ObservableCollection<string>();
 
@@ -89,6 +88,20 @@ namespace FileWatcherConanWPF
             }
             return collection;
         }
+
+        public ObservableCollection<string> GetTextFromTextFile()
+        {
+            string sSource = ConfigurationManager.AppSettings["Mod_File_Location"];
+            ObservableCollection<string> ocRet = new ObservableCollection<string>();
+            if (File.Exists(sSource))
+            {
+                string lines = System.IO.File.ReadAllText(@"C:\Temp\Temp.txt");
+                ocRet.Add(lines);
+            }
+            return ocRet;
+        }
+        
+       
 
 
         public void ErrorLogCreation(Exception ex)
