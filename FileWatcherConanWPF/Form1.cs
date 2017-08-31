@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -39,6 +40,7 @@ namespace FileWatcherConanWPF
 
         private void button1_Click_1(object sender, EventArgs e)
         {
+            FillCheckBoxList();
             button1.Enabled = false;
             System.Timers.Timer aTimer = new System.Timers.Timer();
             aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
@@ -94,23 +96,32 @@ namespace FileWatcherConanWPF
 
         private void checkedListBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            FillCheckBoxList();
-        }
+            bool bIsChecked = false;
+            List<string> values = new List<string>();
+                foreach (object o in checkedListBox1.SelectedItems)
+                    values.Add(o.ToString());
+            int iSelectIndex = checkedListBox1.SelectedIndex;
 
-        private void FillCheckBoxList()
+            string selectedItems = String.Join(",", values);
+            bIsChecked = checkedListBox1.GetItemChecked(iSelectIndex);
+            if (bIsChecked == false) checkedListBox1.SetItemChecked(iSelectIndex, true);
+            else checkedListBox1.SetItemChecked(iSelectIndex, false);
+        }
+        
+
+        public void FillCheckBoxList()
         {
             string sTarget = ConfigurationManager.AppSettings["PAK_Target_Location"];
             string[] fileEntries = Directory.GetFiles(sTarget, "*.*", System.IO.SearchOption.AllDirectories);
             foreach (string fileName in fileEntries)
             {
+                string fFileWithExt = Path.GetFileNameWithoutExtension(fileName);
+                
                 if (fileName.Contains(".pak"))
                 {
-                    checkedListBox1.Items.Add(fileName);
+                    checkedListBox1.Items.Add(fFileWithExt);
                 }
-            }
-            foreach (Control aControl in this.Controls)
-            {
-                this.checkedListBox1.Items.Add(aControl, false);
+            
             }
         }
     }
