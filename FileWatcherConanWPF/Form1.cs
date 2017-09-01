@@ -40,12 +40,17 @@ namespace FileWatcherConanWPF
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            FillCheckBoxList();
             button1.Enabled = false;
+            button4.Enabled = true;
             System.Timers.Timer aTimer = new System.Timers.Timer();
+            System.Timers.Timer bTimer = new System.Timers.Timer();
             aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
             aTimer.Interval = Int32.Parse(ConfigurationManager.AppSettings["Sleep_Time"]);
             aTimer.Enabled = true;
+            bTimer.Elapsed += new ElapsedEventHandler(FillCheckBoxList);
+            bTimer.Interval = 5000;
+            bTimer.Enabled = true;
+            
         }
         private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
@@ -101,28 +106,57 @@ namespace FileWatcherConanWPF
                 foreach (object o in checkedListBox1.SelectedItems)
                     values.Add(o.ToString());
             int iSelectIndex = checkedListBox1.SelectedIndex;
-
-            string selectedItems = String.Join(",", values);
-            bIsChecked = checkedListBox1.GetItemChecked(iSelectIndex);
-            if (bIsChecked == false) checkedListBox1.SetItemChecked(iSelectIndex, true);
-            else checkedListBox1.SetItemChecked(iSelectIndex, false);
+            if (iSelectIndex >= 0)
+            {
+                string selectedItems = String.Join(",", values);
+                bIsChecked = checkedListBox1.GetItemChecked(iSelectIndex);
+                if (bIsChecked == false) checkedListBox1.SetItemChecked(iSelectIndex, true);
+                else checkedListBox1.SetItemChecked(iSelectIndex, false);
+            }
         }
         
 
-        public void FillCheckBoxList()
+        public void FillCheckBoxList(object source, ElapsedEventArgs e)
         {
-            string sTarget = ConfigurationManager.AppSettings["PAK_Target_Location"];
-            string[] fileEntries = Directory.GetFiles(sTarget, "*.*", System.IO.SearchOption.AllDirectories);
-            foreach (string fileName in fileEntries)
+            if (button1.Enabled == false)
             {
-                string fFileWithExt = Path.GetFileNameWithoutExtension(fileName);
-                
-                if (fileName.Contains(".pak"))
+                //this.Invoke((MethodInvoker)(() => checkedListBox1.Items.Clear()));
+                string sTarget = ConfigurationManager.AppSettings["PAK_Target_Location"];
+                string[] fileEntries = Directory.GetFiles(sTarget, "*.*", System.IO.SearchOption.AllDirectories);
+                foreach (string fileName in fileEntries)
                 {
-                    checkedListBox1.Items.Add(fFileWithExt);
+                    if (fileName.Contains(".pak"))
+                    {
+                        string fFileWithExt = Path.GetFileNameWithoutExtension(fileName);
+                        if (!checkedListBox1.Items.Contains(fFileWithExt))
+                        {
+                            this.Invoke((MethodInvoker)(() => checkedListBox1.Items.Add(fFileWithExt)));
+                        }
+                    }
                 }
-            
             }
+        }
+
+        public ObservableCollection<string> GetCheckedItems()
+        {
+            ObservableCollection<string> ocCheckedItems = new ObservableCollection<string>();
+            List<string> values = new List<string>();
+            foreach (object o in checkedListBox1.SelectedItems)
+                values.Add(o.ToString());
+            foreach (string i in values)
+            {
+                ocCheckedItems.Add(i);
+            }
+            return ocCheckedItems;
+        }
+
+        
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            this.Invoke((MethodInvoker)(() => checkedListBox1.Items.Clear()));
+            button1.Enabled = true;
+            button4.Enabled = false;
         }
     }
 }

@@ -24,7 +24,7 @@ namespace FileWatcherConanWPF
             Application.Run(new ConanModWatcher());
         }
 
-        public ObservableCollection<string> MainPortion()
+    public ObservableCollection<string> MainPortion()
         {
             MainProgram MP = new MainProgram();
             try
@@ -40,9 +40,12 @@ namespace FileWatcherConanWPF
             }
         }
     }
+
     public class MainProgram
     {
         private ObservableCollection<string> collection;
+
+        private ConanModWatcher CMW = new ConanModWatcher();
         public ObservableCollection<string> ProcessFileWatcher()
         {
             string sSource = ConfigurationManager.AppSettings["PAK_Location"];
@@ -80,12 +83,16 @@ namespace FileWatcherConanWPF
                     else
                     {
                         File.Copy(fileName, sFileNameDest, true);
+                        string sFileWithExt = Path.GetFileNameWithoutExtension(fileName);
                         //Console.WriteLine($"File: {sFileName} did not exist but exists now.");
                         //lTextBox.Add($"File: {sFileName} did not exist but exists now.");
                         collection.Add($"File: {sFileName} did not exist but exists now.");
+                        ConanModWatcher CMW = new ConanModWatcher();
+
                     }
                 }
             }
+            CMW.GetCheckedItems();
             return collection;
         }
 
@@ -100,9 +107,11 @@ namespace FileWatcherConanWPF
             }
             return ocRet;
         }
-        
-       
 
+        public void SettingUpModsInText()
+        {
+            
+        }
 
         public void ErrorLogCreation(Exception ex)
         {
