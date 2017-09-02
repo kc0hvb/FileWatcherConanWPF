@@ -48,6 +48,8 @@ namespace FileWatcherConanWPF
         private string sPakSource = ConfigurationManager.AppSettings["PAK_Location"];
         private string sPakTarget = ConfigurationManager.AppSettings["PAK_Target_Location"];
 
+        private static ConanModWatcher CMW = new ConanModWatcher();
+
         public ObservableCollection<string> ProcessFileWatcher()
         {
             ConanModWatcher CMW = new ConanModWatcher();
@@ -89,30 +91,33 @@ namespace FileWatcherConanWPF
                     }
                 }
             }
-            CMW.GetCheckedItems();
             return collection;
         }
 
-        public ObservableCollection<string> GetTextFromTextFile()
+        public string[] GetTextFromTextFile()
         {
-            ObservableCollection<string> ocRet = new ObservableCollection<string>();
+            string[] lines = null;
             if (File.Exists(sSource))
             {
-                string lines = System.IO.File.ReadAllText(sSource);
-                ocRet.Add(lines);
+                lines = File.ReadAllLines(sSource);
             }
-            return ocRet;
+                return lines;
+            
         }
 
-        public void SettingUpModsInText()//object source, ElapsedEventArgs e)
+        public void SettingUpModsInText(string pCheckedValue)
         {
-            ConanModWatcher CMW = new ConanModWatcher();
-            ObservableCollection<string> collection = CMW.GetCheckedItems();
-            ObservableCollection<string> collection2 = GetTextFromTextFile();
-            File.WriteAllText(sSource, String.Empty);
-            foreach (var id in collection)
+            string[] collection2 = GetTextFromTextFile();
+            //File.WriteAllText(sSource, String.Empty);
+            if (File.Exists(sSource))
             {
-                if (File.Exists(sSource)) File.WriteAllText(sSource, id);
+                string sCheckedValue = pCheckedValue + ".pak";
+                string sCheckedValueInsert = pCheckedValue + ".pak\r\n";
+                if (collection2.Contains(sCheckedValue));
+                else 
+                {
+                    File.AppendAllText(sSource, sCheckedValueInsert);
+                }
             }
         }
 

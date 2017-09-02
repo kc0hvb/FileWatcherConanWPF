@@ -41,22 +41,6 @@ namespace FileWatcherConanWPF
             }
         }
 
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-            button1.Enabled = false;
-            button4.Enabled = true;
-            System.Timers.Timer aTimer = new System.Timers.Timer();
-            System.Timers.Timer bTimer = new System.Timers.Timer();
-            System.Timers.Timer cTimer = new System.Timers.Timer();
-            aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-            aTimer.Interval = Int32.Parse(ConfigurationManager.AppSettings["Sleep_Time"]);
-            aTimer.Enabled = true;
-            bTimer.Elapsed += new ElapsedEventHandler(FillCheckBoxList);
-            //bTimer.Elapsed += new ElapsedEventHandler(MaPro.SettingUpModsInText);
-            bTimer.Interval = 5000;
-            bTimer.Enabled = true;
-        }
-
         private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
             if (button1.Enabled == false)
@@ -69,18 +53,6 @@ namespace FileWatcherConanWPF
                     Application.DoEvents();
                     Thread.Sleep(Int32.Parse(ConfigurationManager.AppSettings["Sleep_Time"]));
             }
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            this.WindowState = FormWindowState.Minimized;
-            Hide();
-            notifyIcon1.Visible = true;
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            Application.Exit();
         }
 
         private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -113,14 +85,18 @@ namespace FileWatcherConanWPF
             int iSelectIndex = checkedListBox1.SelectedIndex;
             if (iSelectIndex >= 0)
             {
-                foreach (string i in values) ocCheckedItems.Add(i);
+                foreach (string i in values)
+                {
+                    ocCheckedItems.Add(i);
+                    MaPro.SettingUpModsInText(i);
+                }
                 bIsChecked = checkedListBox1.GetItemChecked(iSelectIndex);
                 if (bIsChecked == false) checkedListBox1.SetItemChecked(iSelectIndex, true);
                 else checkedListBox1.SetItemChecked(iSelectIndex, false);
             }
         }
         
-        public void FillCheckBoxList(object source, ElapsedEventArgs e)
+        public void FillCheckBoxList()//object source, ElapsedEventArgs e)
         {
             if (button1.Enabled == false)
             {
@@ -144,14 +120,46 @@ namespace FileWatcherConanWPF
         public ObservableCollection<string> GetCheckedItems()
         {
             List<string> values = new List<string>();
-            if (checkedListBox1.GetItemCheckState(1) == CheckState.Checked) ocCheckedItems.Add("Done");
+            int iSelectIndex = checkedListBox1.SelectedIndex;
+            var test = checkedListBox1.SelectedItem;
+            //foreach (object o in checkedListBox1.SelectedItems) values.Add(o.ToString());
             foreach (string i in values)
             {
                 ocCheckedItems.Add(i);
             }
+
             return ocCheckedItems;
         }
-        
+
+        #region Button Code
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            button1.Enabled = false;
+            button4.Enabled = true;
+            System.Timers.Timer aTimer = new System.Timers.Timer();
+            System.Timers.Timer bTimer = new System.Timers.Timer();
+            System.Timers.Timer cTimer = new System.Timers.Timer();
+            aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            aTimer.Interval = Int32.Parse(ConfigurationManager.AppSettings["Sleep_Time"]);
+            aTimer.Enabled = true;
+            //bTimer.Elapsed += new ElapsedEventHandler(FillCheckBoxList);
+            //bTimer.Elapsed += new ElapsedEventHandler(MaPro.SettingUpModsInText);
+            bTimer.Interval = 5000;
+            bTimer.Enabled = true;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
+            Hide();
+            notifyIcon1.Visible = true;
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
         private void button4_Click(object sender, EventArgs e)
         {
             //this.Invoke((MethodInvoker)(() => checkedListBox1.Items.Clear()));
@@ -161,7 +169,55 @@ namespace FileWatcherConanWPF
 
         private void button5_Click(object sender, EventArgs e)
         {
-            MaPro.SettingUpModsInText();
+            MaPro.SettingUpModsInText(null);
         }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            FillCheckBoxList();
+        }
+        #endregion
+
+        #region Menu drop down fields
+        private void fileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void minimizeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
+            Hide();
+            notifyIcon1.Visible = true;
+        }
+
+        private void exitToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void startToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            button1.Enabled = false;
+            button4.Enabled = true;
+            System.Timers.Timer aTimer = new System.Timers.Timer();
+            System.Timers.Timer bTimer = new System.Timers.Timer();
+            System.Timers.Timer cTimer = new System.Timers.Timer();
+            aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            aTimer.Interval = Int32.Parse(ConfigurationManager.AppSettings["Sleep_Time"]);
+            aTimer.Enabled = true;
+            //bTimer.Elapsed += new ElapsedEventHandler(FillCheckBoxList);
+            //bTimer.Elapsed += new ElapsedEventHandler(MaPro.SettingUpModsInText);
+            bTimer.Interval = 5000;
+            bTimer.Enabled = true;
+        }
+
+        private void stopToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //this.Invoke((MethodInvoker)(() => checkedListBox1.Items.Clear()));
+            button1.Enabled = true;
+            button4.Enabled = false;
+        }
+        #endregion
     }
 }
