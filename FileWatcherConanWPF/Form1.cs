@@ -17,6 +17,9 @@ namespace FileWatcherConanWPF
 {
     public partial class ConanModWatcher : Form
     {
+        private Program Pro = new Program();
+        private MainProgram MaPro = new MainProgram();
+        private ObservableCollection<string> ocCheckedItems = new ObservableCollection<string>();
 
         public ConanModWatcher()
         {
@@ -44,19 +47,20 @@ namespace FileWatcherConanWPF
             button4.Enabled = true;
             System.Timers.Timer aTimer = new System.Timers.Timer();
             System.Timers.Timer bTimer = new System.Timers.Timer();
+            System.Timers.Timer cTimer = new System.Timers.Timer();
             aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
             aTimer.Interval = Int32.Parse(ConfigurationManager.AppSettings["Sleep_Time"]);
             aTimer.Enabled = true;
             bTimer.Elapsed += new ElapsedEventHandler(FillCheckBoxList);
+            //bTimer.Elapsed += new ElapsedEventHandler(MaPro.SettingUpModsInText);
             bTimer.Interval = 5000;
             bTimer.Enabled = true;
-            
         }
+
         private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
             if (button1.Enabled == false)
             {
-                    Program Pro = new Program();
                     var value = Pro.MainPortion();
                     string text = (String.Join(Environment.NewLine, value) + "\r\n");
                     bool isEmpty = !value.Any();
@@ -101,6 +105,7 @@ namespace FileWatcherConanWPF
 
         private void checkedListBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            
             bool bIsChecked = false;
             List<string> values = new List<string>();
                 foreach (object o in checkedListBox1.SelectedItems)
@@ -108,14 +113,13 @@ namespace FileWatcherConanWPF
             int iSelectIndex = checkedListBox1.SelectedIndex;
             if (iSelectIndex >= 0)
             {
-                string selectedItems = String.Join(",", values);
+                foreach (string i in values) ocCheckedItems.Add(i);
                 bIsChecked = checkedListBox1.GetItemChecked(iSelectIndex);
                 if (bIsChecked == false) checkedListBox1.SetItemChecked(iSelectIndex, true);
                 else checkedListBox1.SetItemChecked(iSelectIndex, false);
             }
         }
         
-
         public void FillCheckBoxList(object source, ElapsedEventArgs e)
         {
             if (button1.Enabled == false)
@@ -139,24 +143,25 @@ namespace FileWatcherConanWPF
 
         public ObservableCollection<string> GetCheckedItems()
         {
-            ObservableCollection<string> ocCheckedItems = new ObservableCollection<string>();
             List<string> values = new List<string>();
-            foreach (object o in checkedListBox1.SelectedItems)
-                values.Add(o.ToString());
+            if (checkedListBox1.GetItemCheckState(1) == CheckState.Checked) ocCheckedItems.Add("Done");
             foreach (string i in values)
             {
                 ocCheckedItems.Add(i);
             }
             return ocCheckedItems;
         }
-
         
-
         private void button4_Click(object sender, EventArgs e)
         {
-            this.Invoke((MethodInvoker)(() => checkedListBox1.Items.Clear()));
+            //this.Invoke((MethodInvoker)(() => checkedListBox1.Items.Clear()));
             button1.Enabled = true;
             button4.Enabled = false;
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            MaPro.SettingUpModsInText();
         }
     }
 }

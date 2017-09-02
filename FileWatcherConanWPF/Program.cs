@@ -43,22 +43,24 @@ namespace FileWatcherConanWPF
 
     public class MainProgram
     {
-        private ObservableCollection<string> collection;
+        private string sSource = ConfigurationManager.AppSettings["Mod_File_Location"];
+        private ObservableCollection<string> collection = new ObservableCollection<string>();
+        private string sPakSource = ConfigurationManager.AppSettings["PAK_Location"];
+        private string sPakTarget = ConfigurationManager.AppSettings["PAK_Target_Location"];
 
-        private ConanModWatcher CMW = new ConanModWatcher();
         public ObservableCollection<string> ProcessFileWatcher()
         {
-            string sSource = ConfigurationManager.AppSettings["PAK_Location"];
-            string sTarget = ConfigurationManager.AppSettings["PAK_Target_Location"];
-            //string[] files = System.IO.Directory.GetFiles(sSource.ToString, "*.pak", SearchOption.AllDirectories);
-
-            string[] fileEntries = Directory.GetFiles(sSource, "*.*", System.IO.SearchOption.AllDirectories);
-
-            collection = new ObservableCollection<string>();
-
-            if (!Directory.Exists(sTarget))
+            ConanModWatcher CMW = new ConanModWatcher();
+            if (!File.Exists(sSource))
             {
-                Directory.CreateDirectory(sTarget);
+                File.Create(sSource);
+            }
+
+            string[] fileEntries = Directory.GetFiles(sPakSource, "*.*", System.IO.SearchOption.AllDirectories);
+
+            if (!Directory.Exists(sPakTarget))
+            {
+                Directory.CreateDirectory(sPakTarget);
             }
 
             foreach (string fileName in fileEntries)
@@ -66,7 +68,7 @@ namespace FileWatcherConanWPF
                 if (fileName.Contains(".pak"))
                 {
                     string sFileName = Path.GetFileName(fileName);
-                    string sFileNameDest = sTarget + '\\' + sFileName;
+                    string sFileNameDest = sPakTarget + '\\' + sFileName;
                     bool sFileNameDestExist = File.Exists(sFileNameDest);
                     if (sFileNameDestExist)
                     {
@@ -75,19 +77,14 @@ namespace FileWatcherConanWPF
                         if (fFileInfoSource.LastWriteTimeUtc > fFileInfoDest.LastWriteTimeUtc)
                         {
                             File.Copy(fileName, sFileNameDest, true);
-                            //Console.WriteLine($"File: {sFileName} was updated.");
                             collection.Add($"File: {sFileName} was updated.");
-                            //lTextBox.Add($"File: {sFileName} was updated.");
                         }
                     }
                     else
                     {
                         File.Copy(fileName, sFileNameDest, true);
                         string sFileWithExt = Path.GetFileNameWithoutExtension(fileName);
-                        //Console.WriteLine($"File: {sFileName} did not exist but exists now.");
-                        //lTextBox.Add($"File: {sFileName} did not exist but exists now.");
                         collection.Add($"File: {sFileName} did not exist but exists now.");
-                        ConanModWatcher CMW = new ConanModWatcher();
 
                     }
                 }
@@ -98,19 +95,25 @@ namespace FileWatcherConanWPF
 
         public ObservableCollection<string> GetTextFromTextFile()
         {
-            string sSource = ConfigurationManager.AppSettings["Mod_File_Location"];
             ObservableCollection<string> ocRet = new ObservableCollection<string>();
             if (File.Exists(sSource))
             {
-                string lines = System.IO.File.ReadAllText(@"C:\Temp\Temp.txt");
+                string lines = System.IO.File.ReadAllText(sSource);
                 ocRet.Add(lines);
             }
             return ocRet;
         }
 
-        public void SettingUpModsInText()
+        public void SettingUpModsInText()//object source, ElapsedEventArgs e)
         {
-            
+            ConanModWatcher CMW = new ConanModWatcher();
+            ObservableCollection<string> collection = CMW.GetCheckedItems();
+            ObservableCollection<string> collection2 = GetTextFromTextFile();
+            File.WriteAllText(sSource, String.Empty);
+            foreach (var id in collection)
+            {
+                if (File.Exists(sSource)) File.WriteAllText(sSource, id);
+            }
         }
 
         public void ErrorLogCreation(Exception ex)
@@ -122,8 +125,7 @@ namespace FileWatcherConanWPF
                 file.WriteLine(ex);
             }            
         }
-
-
+        
     }
 
 }
