@@ -37,17 +37,18 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
+            this.modListBox = new System.Windows.Forms.CheckedListBox();
             this.button4 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button6 = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.startToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.stopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.minimizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.startToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.stopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ServerStartButton = new System.Windows.Forms.Button();
+            this.ValidationConanServerButton = new System.Windows.Forms.Button();
+            this.ExitButton = new System.Windows.Forms.Button();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -92,12 +93,15 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click_1);
             // 
-            // checkedListBox1
+            // modListBox
             // 
-            this.checkedListBox1.FormattingEnabled = true;
-            resources.ApplyResources(this.checkedListBox1, "checkedListBox1");
-            this.checkedListBox1.Name = "checkedListBox1";
-            this.checkedListBox1.SelectedIndexChanged += new System.EventHandler(this.checkedListBox1_SelectedIndexChanged);
+            this.modListBox.CheckOnClick = true;
+            this.modListBox.FormattingEnabled = true;
+            resources.ApplyResources(this.modListBox, "modListBox");
+            this.modListBox.Name = "modListBox";
+            this.modListBox.Sorted = true;
+            this.modListBox.ThreeDCheckBoxes = true;
+            this.modListBox.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.modListBox_ItemCheck);
             // 
             // button4
             // 
@@ -105,20 +109,6 @@
             this.button4.Name = "button4";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
-            // 
-            // button5
-            // 
-            resources.ApplyResources(this.button5, "button5");
-            this.button5.Name = "button5";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
-            // button6
-            // 
-            resources.ApplyResources(this.button6, "button6");
-            this.button6.Name = "button6";
-            this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
             // menuStrip1
             // 
@@ -140,10 +130,23 @@
             resources.ApplyResources(this.fileToolStripMenuItem, "fileToolStripMenuItem");
             this.fileToolStripMenuItem.Click += new System.EventHandler(this.fileToolStripMenuItem_Click);
             // 
+            // startToolStripMenuItem
+            // 
+            this.startToolStripMenuItem.Name = "startToolStripMenuItem";
+            resources.ApplyResources(this.startToolStripMenuItem, "startToolStripMenuItem");
+            this.startToolStripMenuItem.Click += new System.EventHandler(this.startToolStripMenuItem_Click);
+            // 
+            // stopToolStripMenuItem
+            // 
+            this.stopToolStripMenuItem.Name = "stopToolStripMenuItem";
+            resources.ApplyResources(this.stopToolStripMenuItem, "stopToolStripMenuItem");
+            this.stopToolStripMenuItem.Click += new System.EventHandler(this.stopToolStripMenuItem_Click);
+            // 
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             resources.ApplyResources(this.settingsToolStripMenuItem, "settingsToolStripMenuItem");
+            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // minimizeToolStripMenuItem
             // 
@@ -157,28 +160,38 @@
             resources.ApplyResources(this.exitToolStripMenuItem1, "exitToolStripMenuItem1");
             this.exitToolStripMenuItem1.Click += new System.EventHandler(this.exitToolStripMenuItem1_Click);
             // 
-            // startToolStripMenuItem
+            // ServerStartButton
             // 
-            this.startToolStripMenuItem.Name = "startToolStripMenuItem";
-            resources.ApplyResources(this.startToolStripMenuItem, "startToolStripMenuItem");
-            this.startToolStripMenuItem.Click += new System.EventHandler(this.startToolStripMenuItem_Click);
+            resources.ApplyResources(this.ServerStartButton, "ServerStartButton");
+            this.ServerStartButton.Name = "ServerStartButton";
+            this.ServerStartButton.UseVisualStyleBackColor = true;
+            this.ServerStartButton.Click += new System.EventHandler(this.ServerStartButton_Click);
             // 
-            // stopToolStripMenuItem
+            // ValidationConanServerButton
             // 
-            this.stopToolStripMenuItem.Name = "stopToolStripMenuItem";
-            resources.ApplyResources(this.stopToolStripMenuItem, "stopToolStripMenuItem");
-            this.stopToolStripMenuItem.Click += new System.EventHandler(this.stopToolStripMenuItem_Click);
+            resources.ApplyResources(this.ValidationConanServerButton, "ValidationConanServerButton");
+            this.ValidationConanServerButton.Name = "ValidationConanServerButton";
+            this.ValidationConanServerButton.UseVisualStyleBackColor = true;
+            this.ValidationConanServerButton.Click += new System.EventHandler(this.ValidationConanServerButton_Click);
+            // 
+            // ExitButton
+            // 
+            resources.ApplyResources(this.ExitButton, "ExitButton");
+            this.ExitButton.Name = "ExitButton";
+            this.ExitButton.UseVisualStyleBackColor = true;
+            this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
             // ConanModWatcher
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ControlBox = false;
-            this.Controls.Add(this.button6);
+            this.Controls.Add(this.ExitButton);
+            this.Controls.Add(this.ValidationConanServerButton);
+            this.Controls.Add(this.ServerStartButton);
             this.Controls.Add(this.menuStrip1);
-            this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
-            this.Controls.Add(this.checkedListBox1);
+            this.Controls.Add(this.modListBox);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.textBox1);
             this.MainMenuStrip = this.menuStrip1;
@@ -200,10 +213,8 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem showToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.CheckedListBox checkedListBox1;
+        private System.Windows.Forms.CheckedListBox modListBox;
         private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button6;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
@@ -211,6 +222,9 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem startToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem stopToolStripMenuItem;
+        private System.Windows.Forms.Button ServerStartButton;
+        private System.Windows.Forms.Button ValidationConanServerButton;
+        private System.Windows.Forms.Button ExitButton;
     }
 }
 
