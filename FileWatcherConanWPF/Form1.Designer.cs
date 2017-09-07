@@ -49,6 +49,7 @@
             this.ServerStartButton = new System.Windows.Forms.Button();
             this.ValidationConanServerButton = new System.Windows.Forms.Button();
             this.ExitButton = new System.Windows.Forms.Button();
+            this.severSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -114,7 +115,8 @@
             // 
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.severSettingsToolStripMenuItem});
             resources.ApplyResources(this.menuStrip1, "menuStrip1");
             this.menuStrip1.Name = "menuStrip1";
             // 
@@ -181,6 +183,12 @@
             this.ExitButton.UseVisualStyleBackColor = true;
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
+            // severSettingsToolStripMenuItem
+            // 
+            this.severSettingsToolStripMenuItem.Name = "severSettingsToolStripMenuItem";
+            resources.ApplyResources(this.severSettingsToolStripMenuItem, "severSettingsToolStripMenuItem");
+            this.severSettingsToolStripMenuItem.Click += new System.EventHandler(this.severSettingsToolStripMenuItem_Click);
+            // 
             // ConanModWatcher
             // 
             resources.ApplyResources(this, "$this");
@@ -225,6 +233,7 @@
         private System.Windows.Forms.Button ServerStartButton;
         private System.Windows.Forms.Button ValidationConanServerButton;
         private System.Windows.Forms.Button ExitButton;
+        private System.Windows.Forms.ToolStripMenuItem severSettingsToolStripMenuItem;
     }
 }
 

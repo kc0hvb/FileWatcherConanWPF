@@ -283,5 +283,16 @@ namespace FileWatcherConanWPF
         {
             Application.Exit();
         }
+
+        private void severSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Dictionary<string, string> dictionary = MaPro.PullValuesFromConfig();
+
+            if (dictionary["Conan_Server_Location"] != "")
+            {
+                ServerSettingsForm form = new ServerSettingsForm();
+                form.Show();
+            }
+        }
     }
 }

@@ -188,27 +188,31 @@ namespace FileWatcherConanWPF
             Process process = new Process();
             try
             {
-                process.StartInfo.FileName = (dConfigValue["SteamCmd_Location"]) + @"\steamcmd.exe";
-                string sConanServerLocation = dConfigValue["Conan_Server_Location"];
-                if (dConfigValue["Conan_Server_Location"] == "")
+                if (dConfigValue["SteamCmd_Location"] != "")
                 {
-                    string sMessage = "Please Setup the location of the server in settings.";
-                    process.StartInfo.Arguments = "";
-                    MessageBox.Show(sMessage);
-                    SettingsForm form = new SettingsForm();
-                    form.Show();
+                    process.StartInfo.FileName = (dConfigValue["SteamCmd_Location"]) + @"\steamcmd.exe";
+                    string sConanServerLocation = dConfigValue["Conan_Server_Location"];
+                    if (dConfigValue["Conan_Server_Location"] == "")
+                    {
+                        string sMessage = "Please Setup the location of the server in settings.";
+                        process.StartInfo.Arguments = "";
+                        MessageBox.Show(sMessage);
+                        SettingsForm form = new SettingsForm();
+                        form.Show();
+                    }
+                    else
+                    {
+                        if (bValidationEnable == true) process.StartInfo.Arguments = $" +login anonymous +force_install_dir {sConanServerLocation} +app_update 443030 validate +exit";
+                        else process.StartInfo.Arguments = $" +login anonymous +force_install_dir {sConanServerLocation} +app_update 443030 +exit";
+                    }
+                    if (process.StartInfo.Arguments != "")
+                    {
+                        process.Start();
+                        process.WaitForExit();
+                        bInstalled = true;
+                    }
                 }
-                else
-                {
-                    if (bValidationEnable == true) process.StartInfo.Arguments = $" +login anonymous +force_install_dir {sConanServerLocation} +app_update 443030 validate +exit";
-                    else process.StartInfo.Arguments = $" +login anonymous +force_install_dir {sConanServerLocation} +app_update 443030 +exit";
-                }
-                if (process.StartInfo.Arguments != "")
-                {
-                    process.Start();
-                    process.WaitForExit();
-                    bInstalled = true;
-                }
+                else MessageBox.Show("Please setup location of SteamCMD before preceeding.");
             }
             catch (Exception ex)
             {
@@ -221,10 +225,13 @@ namespace FileWatcherConanWPF
         {
             Dictionary<string, string> dictionary = PullValuesFromConfig();
             Process process = new Process();
-            process.StartInfo.FileName = dictionary["Batch_Location"];
-            process.StartInfo.WorkingDirectory = Path.GetDirectoryName(dictionary["Batch_Location"]);
-            process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            process.Start();
+            if (dictionary["Batch_Location"] != "")
+            {
+                process.StartInfo.FileName = dictionary["Batch_Location"];
+                process.StartInfo.WorkingDirectory = Path.GetDirectoryName(dictionary["Batch_Location"]);
+                process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                process.Start();
+            }
         }
 
         public void ErrorLogCreation(Exception ex)
