@@ -27,7 +27,11 @@ namespace FileWatcherConanWPF
             Dictionary<string, string> dConfigValues = MaPro.PullValuesFromConfig();
             string sConanServerInstalled = dConfigValues["Conan_Server_Location"];
             string sConanServerFile = sConanServerInstalled + @"\ConanSandboxServer.exe";
-            if (!File.Exists(sConanServerFile) || sConanServerInstalled == "") ValidationConanServerButton.Text = "Install Server";
+            if (!File.Exists(sConanServerFile) || sConanServerInstalled == "")
+            {
+                ValidationConanServerButton.Text = "Install Server";
+                button1.Enabled = false;
+            }
         }
 
         delegate void SetTextCallback(string text);
@@ -45,7 +49,7 @@ namespace FileWatcherConanWPF
             }
         }
 
-        private void OnTimedEvent()//object source, ElapsedEventArgs e)
+        private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
             if (button1.Enabled == false)
             {
@@ -118,18 +122,33 @@ namespace FileWatcherConanWPF
         #region Button Code
         private void button1_Click_1(object sender, EventArgs e)
         {
-            //System.Timers.Timer aTimer = new System.Timers.Timer();
-            //System.Timers.Timer bTimer = new System.Timers.Timer();
-            //System.Timers.Timer cTimer = new System.Timers.Timer();
-            //aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-            //aTimer.Interval = Int32.Parse(ConfigurationManager.AppSettings["Sleep_Time"]);
-            //aTimer.Enabled = true;
-            OnTimedEvent();
-            FillCheckBoxList();
-            CheckBoxItemsInModText();
-            button1.Enabled = false;
-            button4.Enabled = true;
-            ServerStartButton.Enabled = true;
+            try
+            {
+                Dictionary<string, string> dictionary = MaPro.PullValuesFromConfig();
+                if (dictionary["PAK_Target_Location"] != "")
+                {
+                    System.Timers.Timer aTimer = new System.Timers.Timer();
+                    aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+                    aTimer.Interval = Int32.Parse(dictionary["Sleep_Time"]);
+                    aTimer.Enabled = true;
+                    FillCheckBoxList();
+                    CheckBoxItemsInModText();
+                    button1.Enabled = false;
+                    button4.Enabled = true;
+                    ServerStartButton.Enabled = true;
+                }
+                else
+                {
+                    button1.Enabled = true;
+                    button4.Enabled = false;
+                    MessageBox.Show("Please choose a time to check the mods.");
+                }
+            
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -215,7 +234,11 @@ namespace FileWatcherConanWPF
         private void ValidationConanServerButton_Click(object sender, EventArgs e)
         {
             bool bDidUpdate = MaPro.SteamCMDProcess(true);
-            if (bDidUpdate == true) ValidationConanServerButton.Text = "Validate Server";
+            if (bDidUpdate == true)
+            {
+                ValidationConanServerButton.Text = "Validate Server";
+                button1.Enabled = true;
+            }
         }
 
         public List<string> GetCheckedItems()

@@ -72,49 +72,56 @@ namespace FileWatcherConanWPF
 
         public ObservableCollection<string> ProcessFileWatcher()
         {
-            ConanModWatcher CMW = new ConanModWatcher();
-
-            Dictionary<string,string> dConfigValue = PullValuesFromConfig();
-            string sSource = dConfigValue["Mod_File_Location"];
-            string sPakSource = dConfigValue["PAK_Location"];
-            string sPakTarget = dConfigValue["PAK_Target_Location"];
-            if (!File.Exists(sSource))
+            try
             {
-                File.Create(sSource);
-            }
+                ConanModWatcher CMW = new ConanModWatcher();
 
-            string[] fileEntries = Directory.GetFiles(sPakSource, "*.*", System.IO.SearchOption.AllDirectories);
-
-            if (!Directory.Exists(sPakTarget))
-            {
-                Directory.CreateDirectory(sPakTarget);
-            }
-
-            foreach (string fileName in fileEntries)
-            {
-                if (fileName.Contains(".pak"))
+                Dictionary<string, string> dConfigValue = PullValuesFromConfig();
+                string sSource = dConfigValue["Mod_File_Location"];
+                string sPakSource = dConfigValue["PAK_Location"];
+                string sPakTarget = dConfigValue["PAK_Target_Location"];
+                if (!File.Exists(sSource))
                 {
-                    string sFileName = Path.GetFileName(fileName);
-                    string sFileNameDest = sPakTarget + '\\' + sFileName;
-                    bool sFileNameDestExist = File.Exists(sFileNameDest);
-                    if (sFileNameDestExist)
+                    File.Create(sSource);
+                }
+
+                string[] fileEntries = Directory.GetFiles(sPakSource, "*.*", System.IO.SearchOption.AllDirectories);
+
+                if (!Directory.Exists(sPakTarget))
+                {
+                    Directory.CreateDirectory(sPakTarget);
+                }
+
+                foreach (string fileName in fileEntries)
+                {
+                    if (fileName.Contains(".pak"))
                     {
-                        FileInfo fFileInfoSource = new FileInfo(fileName);
-                        FileInfo fFileInfoDest = new FileInfo(sFileNameDest);
-                        if (fFileInfoSource.LastWriteTimeUtc > fFileInfoDest.LastWriteTimeUtc)
+                        string sFileName = Path.GetFileName(fileName);
+                        string sFileNameDest = sPakTarget + '\\' + sFileName;
+                        bool sFileNameDestExist = File.Exists(sFileNameDest);
+                        if (sFileNameDestExist)
+                        {
+                            FileInfo fFileInfoSource = new FileInfo(fileName);
+                            FileInfo fFileInfoDest = new FileInfo(sFileNameDest);
+                            if (fFileInfoSource.LastWriteTimeUtc > fFileInfoDest.LastWriteTimeUtc)
+                            {
+                                File.Copy(fileName, sFileNameDest, true);
+                                collection.Add($"File: {sFileName} was updated.");
+                            }
+                        }
+                        else
                         {
                             File.Copy(fileName, sFileNameDest, true);
-                            collection.Add($"File: {sFileName} was updated.");
+                            string sFileWithExt = Path.GetFileNameWithoutExtension(fileName);
+                            collection.Add($"File: {sFileName} did not exist but exists now.");
+
                         }
                     }
-                    else
-                    {
-                        File.Copy(fileName, sFileNameDest, true);
-                        string sFileWithExt = Path.GetFileNameWithoutExtension(fileName);
-                        collection.Add($"File: {sFileName} did not exist but exists now.");
-
-                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
             }
             return collection;
         }
@@ -179,24 +186,33 @@ namespace FileWatcherConanWPF
             Dictionary<string, string> dConfigValue = new Dictionary<string, string>();
             dConfigValue = PullValuesFromConfig();
             Process process = new Process();
-            process.StartInfo.FileName = (dConfigValue["SteamCmd_Location"]) + @"\steamcmd.exe";
-            string sConanServerLocation = dConfigValue["Conan_Server_Location"];
-            if (dConfigValue["Conan_Server_Location"] == "")
+            try
             {
-                string sMessage = "Please Setup the location of the server in settings.";
-                process.StartInfo.Arguments = "";
-                MessageBox.Show(sMessage);
+                process.StartInfo.FileName = (dConfigValue["SteamCmd_Location"]) + @"\steamcmd.exe";
+                string sConanServerLocation = dConfigValue["Conan_Server_Location"];
+                if (dConfigValue["Conan_Server_Location"] == "")
+                {
+                    string sMessage = "Please Setup the location of the server in settings.";
+                    process.StartInfo.Arguments = "";
+                    MessageBox.Show(sMessage);
+                    SettingsForm form = new SettingsForm();
+                    form.Show();
+                }
+                else
+                {
+                    if (bValidationEnable == true) process.StartInfo.Arguments = $" +login anonymous +force_install_dir {sConanServerLocation} +app_update 443030 validate +exit";
+                    else process.StartInfo.Arguments = $" +login anonymous +force_install_dir {sConanServerLocation} +app_update 443030 +exit";
+                }
+                if (process.StartInfo.Arguments != "")
+                {
+                    process.Start();
+                    process.WaitForExit();
+                    bInstalled = true;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                if (bValidationEnable == true) process.StartInfo.Arguments = $" +login anonymous +force_install_dir {sConanServerLocation} +app_update 443030 validate +exit";
-                else process.StartInfo.Arguments = $" +login anonymous +force_install_dir {sConanServerLocation} +app_update 443030 +exit";
-            }
-            if (process.StartInfo.Arguments != "")
-            {
-                process.Start();
-                process.WaitForExit();
-                bInstalled = true;
+                MessageBox.Show(ex.ToString());
             }
             return bInstalled;
         }

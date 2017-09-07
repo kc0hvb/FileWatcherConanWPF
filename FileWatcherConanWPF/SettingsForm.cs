@@ -22,23 +22,32 @@ namespace FileWatcherConanWPF
 
         private void settingValues()
         {
-            string appPath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string configFile = System.IO.Path.Combine(appPath, "FileWatcherConanWPF.exe.config");
-            ExeConfigurationFileMap configFileMap = new ExeConfigurationFileMap();
-            configFileMap.ExeConfigFilename = configFile;
-            Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
+            try
+            {
+                string appPath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                string configFile = System.IO.Path.Combine(appPath, "FileWatcherConanWPF.exe.config");
+                ExeConfigurationFileMap configFileMap = new ExeConfigurationFileMap();
+                configFileMap.ExeConfigFilename = configFile;
+                Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
 
-            workshopPakLocationText.Text = config.AppSettings.Settings["PAK_Location"].Value;
-            int sSleepTime = (System.Int32.Parse(config.AppSettings.Settings["Sleep_Time"].Value) / 1000);
-            sleepTimeInt.Value = sSleepTime;
-            modTargetLocationText.Text = config.AppSettings.Settings["PAK_Target_Location"].Value;
-            modLocationText.Text = config.AppSettings.Settings["Mod_File_Location"].Value;
-            if (config.AppSettings.Settings["Automaticaly_Transfer_Files"].Value == "true") transferFilesCheck.Checked = true;
-            else transferFilesCheck.Checked = false;
-            ConanServerLocationText.Text = config.AppSettings.Settings["Conan_Server_Location"].Value;
-            SteamCmdLocationText.Text = config.AppSettings.Settings["SteamCmd_Location"].Value;
-            BatchFileText.Text = config.AppSettings.Settings["Batch_Location"].Value;
-
+                workshopPakLocationText.Text = config.AppSettings.Settings["PAK_Location"].Value;
+                if (config.AppSettings.Settings["Sleep_Time"].Value != ("").ToString() && config.AppSettings.Settings["Sleep_Time"].Value != ("0").ToString())
+                {
+                    int sSleepTime = (System.Int32.Parse(config.AppSettings.Settings["Sleep_Time"].Value) / 1000);
+                    sleepTimeInt.Value = sSleepTime;
+                }
+                modTargetLocationText.Text = config.AppSettings.Settings["PAK_Target_Location"].Value;
+                modLocationText.Text = config.AppSettings.Settings["Mod_File_Location"].Value;
+                if (config.AppSettings.Settings["Automaticaly_Transfer_Files"].Value == "true") transferFilesCheck.Checked = true;
+                else transferFilesCheck.Checked = false;
+                ConanServerLocationText.Text = config.AppSettings.Settings["Conan_Server_Location"].Value;
+                SteamCmdLocationText.Text = config.AppSettings.Settings["SteamCmd_Location"].Value;
+                BatchFileText.Text = config.AppSettings.Settings["Batch_Location"].Value;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
         }
 
         private void saveButton_Click(object sender, EventArgs e)
