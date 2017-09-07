@@ -125,7 +125,7 @@ namespace FileWatcherConanWPF
             try
             {
                 Dictionary<string, string> dictionary = MaPro.PullValuesFromConfig();
-                if (dictionary["PAK_Target_Location"] != "")
+                if (dictionary["Sleep_Time"] != "")
                 {
                     System.Timers.Timer aTimer = new System.Timers.Timer();
                     aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
