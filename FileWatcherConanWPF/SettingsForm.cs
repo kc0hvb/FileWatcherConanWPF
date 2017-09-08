@@ -16,6 +16,8 @@ namespace FileWatcherConanWPF
     {
         public SettingsForm()
         {
+            Form form = Application.OpenForms["ServerSettingsForm"];
+            if (form != null) form.Close();
             InitializeComponent();
             settingValues();
         }
