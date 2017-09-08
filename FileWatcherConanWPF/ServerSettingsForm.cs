@@ -58,6 +58,31 @@ namespace FileWatcherConanWPF
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
+            Dictionary<string, string> dictionary = MaPro.PullValuesFromConfig();
+            string sTempFile = Path.GetTempFileName();
+            string sSource = dictionary["Conan_Server_Location"] + @"\ConanSandbox\Saved\Config\WindowsServer\" + "ServerSettings.ini";
+            StringBuilder builder = new StringBuilder();
+            int rowcount = ServerSettingsGridView.Rows.Count;
+            int columncount = ServerSettingsGridView.Columns.Count;
+            List<string> headerCols = new List<string>();
+            for (int j = 0; j < columncount - 1; j++)
+            {
+                headerCols.Add(ServerSettingsGridView.Columns[j].HeaderText);
+            }
+            builder.AppendLine(string.Join("\t", headerCols));
+
+            for (int i = 0; i < rowcount - 1; i++)
+            {
+                List<string> cols = new List<string>();
+                for (int j = 0; j < columncount - 2; j++)
+                {
+                    cols.Add(ServerSettingsGridView.Rows[i].Cells[j].Value.ToString());
+                }
+                builder.AppendLine(string.Join("\t", cols.ToArray()));
+            }
+            System.IO.File.WriteAllText(sTempFile, builder.ToString());
+            File.Delete(sSource);
+            File.Move(sTempFile, sSource);
             Application.OpenForms[1].Close();
         }
 
