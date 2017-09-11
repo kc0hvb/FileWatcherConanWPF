@@ -39,7 +39,6 @@ namespace FileWatcherConanWPF
                     sleepTimeInt.Value = sSleepTime;
                 }
                 modTargetLocationText.Text = config.AppSettings.Settings["PAK_Target_Location"].Value;
-                modLocationText.Text = config.AppSettings.Settings["Mod_File_Location"].Value;
                 if (config.AppSettings.Settings["Automaticaly_Transfer_Files"].Value == "true") transferFilesCheck.Checked = true;
                 else transferFilesCheck.Checked = false;
                 ConanServerLocationText.Text = config.AppSettings.Settings["Conan_Server_Location"].Value;
@@ -59,8 +58,7 @@ namespace FileWatcherConanWPF
             ExeConfigurationFileMap configFileMap = new ExeConfigurationFileMap();
             configFileMap.ExeConfigFilename = configFile;
             Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
-
-            if (modLocationText.Text != "") config.AppSettings.Settings["Mod_File_Location"].Value = modLocationText.Text.ToString();
+            
             if (workshopPakLocationText.Text != "") config.AppSettings.Settings["PAK_Location"].Value = workshopPakLocationText.Text.ToString();
             if (modTargetLocationText.Text != "") config.AppSettings.Settings["PAK_Target_Location"].Value = modTargetLocationText.Text.ToString();
             decimal iSleepTime = (sleepTimeInt.Value * 1000);
@@ -85,7 +83,6 @@ namespace FileWatcherConanWPF
             if (fileDialog.ShowDialog() == DialogResult.OK)
             {
                 string sModTextFile = fileDialog.FileName;
-                modLocationText.Text = sModTextFile;
             }
         }
 

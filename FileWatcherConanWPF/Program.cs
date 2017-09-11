@@ -68,7 +68,6 @@ namespace FileWatcherConanWPF
             dValuesFromConfig.Add("PAK_Location", config.AppSettings.Settings["PAK_Location"].Value);
             dValuesFromConfig.Add("Sleep_Time", config.AppSettings.Settings["Sleep_Time"].Value);
             dValuesFromConfig.Add("PAK_Target_Location", config.AppSettings.Settings["PAK_Target_Location"].Value);
-            dValuesFromConfig.Add("Mod_File_Location", config.AppSettings.Settings["Mod_File_Location"].Value);
             dValuesFromConfig.Add("Automaticaly_Transfer_Files", config.AppSettings.Settings["Automaticaly_Transfer_Files"].Value);
             dValuesFromConfig.Add("Conan_Server_Location", config.AppSettings.Settings["Conan_Server_Location"].Value);
             dValuesFromConfig.Add("SteamCmd_Location", config.AppSettings.Settings["SteamCmd_Location"].Value);
@@ -87,7 +86,7 @@ namespace FileWatcherConanWPF
                 ConanModWatcher CMW = new ConanModWatcher();
 
                 Dictionary<string, string> dConfigValue = PullValuesFromConfig();
-                string sSource = dConfigValue["Mod_File_Location"];
+                string sSource = dConfigValue["Conan_Server_Location"] + @"\ConanSandbox\Mods\modlist.txt";
                 string sPakSource = dConfigValue["PAK_Location"];
                 string sPakTarget = dConfigValue["PAK_Target_Location"];
                 if (!File.Exists(sSource))
@@ -140,9 +139,9 @@ namespace FileWatcherConanWPF
         public string[] GetTextFromTextFile(Dictionary<string, string> pSource)
         {
 
-            string sSource = pSource["Mod_File_Location"];
+            string sSource = pSource["Conan_Server_Location"] + @"\ConanSandbox\Mods\modlist.txt";
             string[] lines = null;
-            if (pSource["Mod_File_Location"] != "")
+            if (pSource["Conan_Server_Location"] != "")
             {
                 if (File.Exists(sSource))
                 {
@@ -156,7 +155,7 @@ namespace FileWatcherConanWPF
         public void AddingModsInText(string pCheckedValue)
         {
             Dictionary<string, string> dConfigValue = PullValuesFromConfig();
-            string sSource = dConfigValue["Mod_File_Location"];
+            string sSource = dConfigValue["Conan_Server_Location"] + @"\ConanSandbox\Mods\modlist.txt";
 
             //File.WriteAllText(sSource, String.Empty);
             string checkedItems = string.Empty;
@@ -177,7 +176,7 @@ namespace FileWatcherConanWPF
         public void RemovingModsInText(string pCheckedValue)
         {
             Dictionary<string, string> dConfigValue = PullValuesFromConfig();
-            string sSource = dConfigValue["Mod_File_Location"];
+            string sSource = dConfigValue["Conan_Server_Location"] + @"\ConanSandbox\Mods\modlist.txt";
 
             var tempFile = Path.GetTempFileName();
             string[] linesToKeep = File.ReadAllLines(sSource);

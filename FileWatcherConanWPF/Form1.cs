@@ -51,17 +51,14 @@ namespace FileWatcherConanWPF
 
         private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
-            if (button1.Enabled == false)
+            if (button1.Enabled == false && ConfigurationManager.AppSettings["Automaticaly_Transfer_Files"] == "true")
             {
-                if (ConfigurationManager.AppSettings["Automaticaly_Transfer_Files"] == "true")
-                {
-                    var value = Pro.MainPortion();
-                    string text = (String.Join(Environment.NewLine, value) + "\r\n");
-                    bool isEmpty = !value.Any();
-                    if (isEmpty) { }
-                    else SetText(text);
-                    Application.DoEvents();
-                }
+                var value = Pro.MainPortion();
+                string text = (String.Join(Environment.NewLine, value) + "\r\n");
+                bool isEmpty = !value.Any();
+                if (isEmpty) { }
+                else SetText(text);
+                Application.DoEvents();
             }
         }
 
@@ -216,8 +213,6 @@ namespace FileWatcherConanWPF
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            button1.Enabled = true;
-            button4.Enabled = false;
             SettingsForm frm = new SettingsForm();
             frm.Show();
         }
