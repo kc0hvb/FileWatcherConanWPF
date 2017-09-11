@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Timers;
+using System.Runtime.InteropServices;
 using System.Configuration;
 using System.IO;
 using System.Collections.ObjectModel;
@@ -41,13 +41,21 @@ namespace FileWatcherConanWPF
             }
         }
     }
-
     public class MainProgram
     {
+        #region Static Functions.
         private ObservableCollection<string> collection = new ObservableCollection<string>();
-        
-        private static ConanModWatcher CMW = new ConanModWatcher();
 
+        private static ConanModWatcher CMW = new ConanModWatcher();
+        
+        [DllImport("user32.dll")]
+        private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+        #endregion
+
+        #region Getting information from Configuration file.
         public Dictionary<string, string> PullValuesFromConfig()
         {
             Dictionary<string, string> dValuesFromConfig = new Dictionary<string, string>();
@@ -69,7 +77,9 @@ namespace FileWatcherConanWPF
 
             return dValuesFromConfig;
         }
+        #endregion
 
+        #region The Actual file watching and copying of Mod files.
         public ObservableCollection<string> ProcessFileWatcher()
         {
             try
@@ -98,8 +108,7 @@ namespace FileWatcherConanWPF
                     {
                         string sFileName = Path.GetFileName(fileName);
                         string sFileNameDest = sPakTarget + '\\' + sFileName;
-                        bool sFileNameDestExist = File.Exists(sFileNameDest);
-                        if (sFileNameDestExist)
+                        if (File.Exists(sFileNameDest))
                         {
                             FileInfo fFileInfoSource = new FileInfo(fileName);
                             FileInfo fFileInfoDest = new FileInfo(sFileNameDest);
@@ -125,25 +134,30 @@ namespace FileWatcherConanWPF
             }
             return collection;
         }
+        #endregion
 
+        #region Getting Adding and Removing information from Text.
         public string[] GetTextFromTextFile(Dictionary<string, string> pSource)
         {
 
             string sSource = pSource["Mod_File_Location"];
             string[] lines = null;
-            if (File.Exists(sSource))
+            if (pSource["Mod_File_Location"] != "")
             {
-                lines = File.ReadAllLines(sSource);
+                if (File.Exists(sSource))
+                {
+                    lines = File.ReadAllLines(sSource);
+                }
             }
-                return lines;
-            
+            return lines;
+
         }
 
         public void AddingModsInText(string pCheckedValue)
         {
             Dictionary<string, string> dConfigValue = PullValuesFromConfig();
             string sSource = dConfigValue["Mod_File_Location"];
-            
+
             //File.WriteAllText(sSource, String.Empty);
             string checkedItems = string.Empty;
             if (!File.Exists(sSource)) File.Create(sSource).Close();
@@ -156,7 +170,7 @@ namespace FileWatcherConanWPF
                     tw.WriteLine(pCheckedValue);
                     tw.Close();
                 }
-                
+
             }
         }
 
@@ -179,13 +193,16 @@ namespace FileWatcherConanWPF
             File.Delete(sSource);
             File.Move(tempFile, sSource);
         }
-        
+        #endregion
+
+        #region Server Starting and Stopping
         public bool SteamCMDProcess(bool bValidationEnable)
         {
             bool bInstalled = false;
             Dictionary<string, string> dConfigValue = new Dictionary<string, string>();
             dConfigValue = PullValuesFromConfig();
             Process process = new Process();
+            process.StartInfo.CreateNoWindow = true;
             try
             {
                 if (dConfigValue["SteamCmd_Location"] != "")
@@ -234,11 +251,36 @@ namespace FileWatcherConanWPF
             }
         }
 
+        public void StopServer()
+        {
+            SendCommandToServer();
+        }
+        
+        public bool ServerIsRunning()
+        {
+            bool bRet = false;
+            Process p = Process.GetProcessesByName("ConanSandboxServer-Win64-Test").FirstOrDefault();
+            if (p != null) bRet = true;
+            return bRet;
+        }
+
+        public void SendCommandToServer()
+        {
+            Process p = Process.GetProcessesByName("ConanSandboxServer-Win64-Test").FirstOrDefault();
+            if (p != null)
+            {
+                IntPtr h = p.MainWindowHandle;
+                SetForegroundWindow(h);
+                SendKeys.SendWait("^(C)");
+                SendKeys.Flush();
+            }
+        }
+        #endregion
+
         public void ErrorLogCreation(Exception ex)
         {
             string sErrorFilePath = AppDomain.CurrentDomain.BaseDirectory + $"Error Log {DateTime.Today.Millisecond}.txt";
-            using (StreamWriter file =
-            new StreamWriter(sErrorFilePath))
+            using (StreamWriter file = new StreamWriter(sErrorFilePath))
             {
                 file.WriteLine(ex);
             }            

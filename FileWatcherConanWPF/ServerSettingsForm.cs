@@ -37,7 +37,7 @@ namespace FileWatcherConanWPF
                 string[] lines = File.ReadAllLines(pSource);
                 foreach (string i in lines)
                 {
-                    if (pSource.Contains("Game")) GameIniListBox.Items.Add(i);
+                    if (pSource.Contains("Game")) GameIniTextBox.Text += i + "\r\n";
                     if (pSource.Contains("ServerSettings"))
                     {
                         if (i.Contains("="))
@@ -58,37 +58,58 @@ namespace FileWatcherConanWPF
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            Dictionary<string, string> dictionary = MaPro.PullValuesFromConfig();
-            string sTempFile = Path.GetTempFileName();
-            string sSource = dictionary["Conan_Server_Location"] + @"\ConanSandbox\Saved\Config\WindowsServer\" + "ServerSettings.ini";
-            StringBuilder builder = new StringBuilder();
-            int rowcount = ServerSettingsGridView.Rows.Count;
-            int columncount = ServerSettingsGridView.Columns.Count;
-            List<string> headerCols = new List<string>();
-            for (int j = 0; j < columncount - 1; j++)
-            {
-                headerCols.Add(ServerSettingsGridView.Columns[j].HeaderText);
-            }
-            builder.AppendLine(string.Join("\t", headerCols));
-
-            for (int i = 0; i < rowcount - 1; i++)
-            {
-                List<string> cols = new List<string>();
-                for (int j = 0; j < columncount - 2; j++)
-                {
-                    cols.Add(ServerSettingsGridView.Rows[i].Cells[j].Value.ToString());
-                }
-                builder.AppendLine(string.Join("\t", cols.ToArray()));
-            }
-            System.IO.File.WriteAllText(sTempFile, builder.ToString());
-            File.Delete(sSource);
-            File.Move(sTempFile, sSource);
+            SavingGameIni();
+            SavingServerSettingsIni();
             Application.OpenForms[1].Close();
         }
 
         private void ServerSettingsGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
+        }
+
+        private void SavingGameIni()
+        {
+            Dictionary<string, string> dictionary = MaPro.PullValuesFromConfig();
+            string sTempFile = Path.GetTempFileName();
+            string sSourceGameIni = dictionary["Conan_Server_Location"] + @"\ConanSandbox\Saved\Config\WindowsServer\" + "Game.ini";
+            File.WriteAllText(sTempFile, GameIniTextBox.Text);
+            File.Delete(sSourceGameIni);
+            File.Move(sTempFile, sSourceGameIni);
+        }
+
+        private void SavingServerSettingsIni()
+        {
+            Dictionary<string, string> dictionary = MaPro.PullValuesFromConfig();
+            string sTempFile = Path.GetTempFileName();
+            string sSourceServerIni = dictionary["Conan_Server_Location"] + @"\ConanSandbox\Saved\Config\WindowsServer\" + "ServerSettings.ini";
+            List<string> sb = new List<string>();
+            sb.Add("[ServerSettings]");
+            using (StreamWriter sw = new StreamWriter(sTempFile))
+            {
+                try
+                {
+                    //Building a list to insert into a text document.
+                    foreach (DataGridViewRow row in ServerSettingsGridView.Rows)
+                    {
+                        if (row.Cells["Description"].Value != null)
+                        {
+                            if (row.Cells["Value"].Value.ToString() != "" && row.Cells["Value"].Value.ToString() != null)
+                                sb.Add(string.Format("{0}{1}{2}", row.Cells["Description"].Value.ToString(), ("=").ToString(), row.Cells["Value"].Value.ToString()));
+                            else
+                                sb.Add(string.Format("{0}{1}", row.Cells["Description"].Value.ToString(), ("=").ToString()));
+                        }
+                    }
+                    //Inserting into the text document from list.
+                    foreach (string i in sb)
+                        sw.WriteLine(i);
+                    sw.Close();
+                }
+                catch (Exception ex) { MessageBox.Show(ex.ToString()); }
+            }
+
+            File.Delete(sSourceServerIni);
+            File.Move(sTempFile, sSourceServerIni);
         }
 
         private void dataGridViewempl_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -116,6 +137,11 @@ namespace FileWatcherConanWPF
                         ServerSettingsGridView.CurrentCell.Value = true;
                 }
             }
+        }
+
+        private void CancelButton_Click(object sender, EventArgs e)
+        {
+            Application.OpenForms[1].Close();
         }
     }
 }

@@ -87,8 +87,8 @@ namespace FileWatcherConanWPF
         
         public void FillCheckBoxList()//object source, ElapsedEventArgs e)
         {
-            //if (button1.Enabled == false)
-            //{
+            if (ConfigurationManager.AppSettings["PAK_Target_Location"] != "")
+            {
                 string sTarget = ConfigurationManager.AppSettings["PAK_Target_Location"];
                 string[] fileEntries = Directory.GetFiles(sTarget, "*.*", System.IO.SearchOption.AllDirectories);
                 foreach (string fileName in fileEntries)
@@ -102,7 +102,7 @@ namespace FileWatcherConanWPF
                         }
                     }
                 }
-            //}
+            }
         }
 
         public ObservableCollection<string> GetCheckedItemsOld()
@@ -145,9 +145,9 @@ namespace FileWatcherConanWPF
                 }
             
             }
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show(ex.ToString());
+                MessageBox.Show("Please Setup the conifguration first.");
             }
         }
 
@@ -227,8 +227,17 @@ namespace FileWatcherConanWPF
             Dictionary<string, string> dictionary = MaPro.PullValuesFromConfig();
             bool bValidate = false;
             if (dictionary["Validate_Conan"] == "true") bValidate = true;
-            MaPro.SteamCMDProcess(bValidate);
-            MaPro.StartServer();
+            if (ServerStartButton.Text == "Start Server")
+            {
+                MaPro.SteamCMDProcess(bValidate);
+                MaPro.StartServer();
+                ServerStartButton.Text = "Stop Server";
+            }
+            else if (ServerStartButton.Text == "Stop Server")
+            {
+                MaPro.StopServer();
+                ServerStartButton.Text = "Start Server";
+            }            
         }
 
         private void ValidationConanServerButton_Click(object sender, EventArgs e)
@@ -254,14 +263,11 @@ namespace FileWatcherConanWPF
 
         private void modListBox_ItemCheck(Object sender, ItemCheckEventArgs e)
         {
-            if (button1.Enabled == false)
+            if (button1.Enabled == false && modListBox.SelectedItem.ToString() != null)
             {
-                if (modListBox.SelectedItem.ToString() != null)
-                {
-                    string value = modListBox.SelectedItem.ToString() + ".pak";
-                    if (e.NewValue.ToString() == "Checked") MaPro.AddingModsInText(value);
-                    else MaPro.RemovingModsInText(value);
-                }
+                string value = modListBox.SelectedItem.ToString() + ".pak";
+                if (e.NewValue.ToString() == "Checked") MaPro.AddingModsInText(value);
+                else MaPro.RemovingModsInText(value);
             }
         }
 
@@ -287,11 +293,15 @@ namespace FileWatcherConanWPF
         private void severSettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Dictionary<string, string> dictionary = MaPro.PullValuesFromConfig();
-
-            if (dictionary["Conan_Server_Location"] != "")
+            bool bIsRunning = MaPro.ServerIsRunning();
+            if (bIsRunning == false && dictionary["Conan_Server_Location"] != "")
             {
                 ServerSettingsForm form = new ServerSettingsForm();
                 form.Show();
+            }
+            else
+            {
+                MessageBox.Show("Please stop the server before editing.");
             }
         }
     }

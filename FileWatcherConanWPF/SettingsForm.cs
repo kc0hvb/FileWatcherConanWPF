@@ -144,5 +144,10 @@ namespace FileWatcherConanWPF
                 BatchFileText.Text = sBatchTextFile;
             }
         }
+
+        private void CancelButton_Click(object sender, EventArgs e)
+        {
+            Application.OpenForms[1].Close();
+        }
     }
 }

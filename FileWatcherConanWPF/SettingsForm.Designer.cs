@@ -53,6 +53,7 @@
             this.BatchLocationButton = new System.Windows.Forms.Button();
             this.BatchFileText = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
+            this.SettingsCancelButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.sleepTimeInt)).BeginInit();
             this.SuspendLayout();
             // 
@@ -90,7 +91,8 @@
             // 
             // saveButton
             // 
-            this.saveButton.Location = new System.Drawing.Point(549, 378);
+            this.saveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.saveButton.Location = new System.Drawing.Point(468, 378);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(75, 30);
             this.saveButton.TabIndex = 4;
@@ -280,12 +282,25 @@
             this.label9.TabIndex = 25;
             this.label9.Text = "Batch File Location";
             // 
+            // SettingsCancelButton
+            // 
+            this.SettingsCancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.SettingsCancelButton.Location = new System.Drawing.Point(549, 378);
+            this.SettingsCancelButton.Name = "SettingsCancelButton";
+            this.SettingsCancelButton.Size = new System.Drawing.Size(75, 30);
+            this.SettingsCancelButton.TabIndex = 26;
+            this.SettingsCancelButton.Text = "Cancel";
+            this.SettingsCancelButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            this.SettingsCancelButton.UseVisualStyleBackColor = true;
+            this.SettingsCancelButton.Click += new System.EventHandler(this.CancelButton_Click);
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(637, 420);
             this.ControlBox = false;
+            this.Controls.Add(this.SettingsCancelButton);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.BatchFileText);
             this.Controls.Add(this.BatchLocationButton);
@@ -346,5 +361,6 @@
         private System.Windows.Forms.Button BatchLocationButton;
         private System.Windows.Forms.TextBox BatchFileText;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Button SettingsCancelButton;
     }
 }

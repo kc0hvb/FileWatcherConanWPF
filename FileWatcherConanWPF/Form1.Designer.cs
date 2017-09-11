@@ -46,10 +46,10 @@
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.minimizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.severSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ServerStartButton = new System.Windows.Forms.Button();
             this.ValidationConanServerButton = new System.Windows.Forms.Button();
             this.ExitButton = new System.Windows.Forms.Button();
-            this.severSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -96,9 +96,9 @@
             // 
             // modListBox
             // 
+            resources.ApplyResources(this.modListBox, "modListBox");
             this.modListBox.CheckOnClick = true;
             this.modListBox.FormattingEnabled = true;
-            resources.ApplyResources(this.modListBox, "modListBox");
             this.modListBox.Name = "modListBox";
             this.modListBox.Sorted = true;
             this.modListBox.ThreeDCheckBoxes = true;
@@ -162,6 +162,12 @@
             resources.ApplyResources(this.exitToolStripMenuItem1, "exitToolStripMenuItem1");
             this.exitToolStripMenuItem1.Click += new System.EventHandler(this.exitToolStripMenuItem1_Click);
             // 
+            // severSettingsToolStripMenuItem
+            // 
+            this.severSettingsToolStripMenuItem.Name = "severSettingsToolStripMenuItem";
+            resources.ApplyResources(this.severSettingsToolStripMenuItem, "severSettingsToolStripMenuItem");
+            this.severSettingsToolStripMenuItem.Click += new System.EventHandler(this.severSettingsToolStripMenuItem_Click);
+            // 
             // ServerStartButton
             // 
             resources.ApplyResources(this.ServerStartButton, "ServerStartButton");
@@ -182,12 +188,6 @@
             this.ExitButton.Name = "ExitButton";
             this.ExitButton.UseVisualStyleBackColor = true;
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
-            // 
-            // severSettingsToolStripMenuItem
-            // 
-            this.severSettingsToolStripMenuItem.Name = "severSettingsToolStripMenuItem";
-            resources.ApplyResources(this.severSettingsToolStripMenuItem, "severSettingsToolStripMenuItem");
-            this.severSettingsToolStripMenuItem.Click += new System.EventHandler(this.severSettingsToolStripMenuItem_Click);
             // 
             // ConanModWatcher
             // 
