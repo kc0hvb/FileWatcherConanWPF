@@ -80,7 +80,7 @@ namespace FileWatcherConanWPF
         private void ModTextFileButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
-            fileDialog.Filter = "Mod File|Mods.txt";
+            fileDialog.Filter = "Mod File|modlist.txt";
             fileDialog.Multiselect = false;
             if (fileDialog.ShowDialog() == DialogResult.OK)
             {
