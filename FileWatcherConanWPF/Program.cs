@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Reflection;
+using System.Linq.Expressions;
 
 namespace FileWatcherConanWPF
 {
@@ -40,6 +42,13 @@ namespace FileWatcherConanWPF
                 return lTextBox;
             }
         }
+
+        
+    }
+
+    public class UpdatingUI
+    {
+        
     }
     public class MainProgram
     {
@@ -284,7 +293,11 @@ namespace FileWatcherConanWPF
                 file.WriteLine(ex);
             }            
         }
-        
+        public void UpdatingButtonText(Button button, string text)
+        {
+            button.Text = text.ToString();
+        }
+
     }
 
 }

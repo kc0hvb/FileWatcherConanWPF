@@ -11,7 +11,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Configuration;
+
 
 namespace FileWatcherConanWPF
 {
@@ -27,11 +27,27 @@ namespace FileWatcherConanWPF
             Dictionary<string, string> dConfigValues = MaPro.PullValuesFromConfig();
             string sConanServerInstalled = dConfigValues["Conan_Server_Location"];
             string sConanServerFile = sConanServerInstalled + @"\ConanSandboxServer.exe";
+            System.Timers.Timer tButtonTimer = new System.Timers.Timer();
+            tButtonTimer.Elapsed += new ElapsedEventHandler(SetInstallVerifyServer);
+            tButtonTimer.Interval = Int32.Parse("5000");
+            tButtonTimer.Enabled = true;
             if (!File.Exists(sConanServerFile) || sConanServerInstalled == "")
             {
                 ValidationConanServerButton.Text = "Install Server";
                 button1.Enabled = false;
             }
+        }
+        
+        private void SetInstallVerifyServer(object source, ElapsedEventArgs e)
+        {
+            Dictionary<string, string> dConfigValues = MaPro.PullValuesFromConfig();
+            if (dConfigValues["Conan_Server_Location"] != "" && File.Exists(dConfigValues["Conan_Server_Location"] + @"\ConanSandboxServer.exe"))
+            {
+                ValidationConanServerButton.BeginInvoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Verify Server";}));
+                Application.DoEvents();
+            }
+            else ValidationConanServerButton.BeginInvoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Install Server"; }));
+            Application.DoEvents();
         }
 
         delegate void SetTextCallback(string text);

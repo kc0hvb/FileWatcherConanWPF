@@ -38,19 +38,16 @@ namespace FileWatcherConanWPF
                 foreach (string i in lines)
                 {
                     if (pSource.Contains("Game")) GameIniTextBox.Text += i + "\r\n";
-                    if (pSource.Contains("ServerSettings"))
+                    if (pSource.Contains("ServerSettings") && i.Contains("="))
                     {
-                        if (i.Contains("="))
-                        {
-                            string sDescription = i.Substring(0, i.IndexOf('='));
-                            string sValue = i.Substring(i.LastIndexOf('=') + 1);
-                            if (sValue.Contains("True"))
-                                ServerSettingsGridView.Rows.Add(sDescription, sValue, true);
-                            else if (sValue.Contains("False"))
-                                ServerSettingsGridView.Rows.Add(sDescription, sValue, false);
-                            else
-                                ServerSettingsGridView.Rows.Add(sDescription, sValue, false);
-                        }
+                        string sDescription = i.Substring(0, i.IndexOf('='));
+                        string sValue = i.Substring(i.LastIndexOf('=') + 1);
+                        if (sValue.Contains("True"))
+                            ServerSettingsGridView.Rows.Add(sDescription, sValue, true);
+                        else if (sValue.Contains("False"))
+                            ServerSettingsGridView.Rows.Add(sDescription, sValue, false);
+                        else
+                            ServerSettingsGridView.Rows.Add(sDescription, sValue, false);
                     }
                 }
             }
