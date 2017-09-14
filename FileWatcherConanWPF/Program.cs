@@ -116,22 +116,31 @@ namespace FileWatcherConanWPF
                     {
                         string sFileName = Path.GetFileName(fileName);
                         string sFileNameDest = sPakTarget + '\\' + sFileName;
-                        if (File.Exists(sFileNameDest))
+                        if (dConfigValue["Automaticaly_Transfer_Files"] == "true")
                         {
-                            FileInfo fFileInfoSource = new FileInfo(fileName);
-                            FileInfo fFileInfoDest = new FileInfo(sFileNameDest);
-                            if (fFileInfoSource.LastWriteTimeUtc > fFileInfoDest.LastWriteTimeUtc)
+                            if (File.Exists(sFileNameDest))
+                            {
+                                FileInfo fFileInfoSource = new FileInfo(fileName);
+                                FileInfo fFileInfoDest = new FileInfo(sFileNameDest);
+                                if (fFileInfoSource.LastWriteTimeUtc > fFileInfoDest.LastWriteTimeUtc)
+                                {
+                                    File.Copy(fileName, sFileNameDest, true);
+                                    collection.Add($"File: {sFileName} was updated.");
+                                }
+
+                            }
+                            else
                             {
                                 File.Copy(fileName, sFileNameDest, true);
-                                collection.Add($"File: {sFileName} was updated.");
+                                string sFileWithExt = Path.GetFileNameWithoutExtension(fileName);
+                                collection.Add($"File: {sFileName} did not exist but exists now.");
+
                             }
                         }
                         else
                         {
-                            File.Copy(fileName, sFileNameDest, true);
-                            string sFileWithExt = Path.GetFileNameWithoutExtension(fileName);
-                            collection.Add($"File: {sFileName} did not exist but exists now.");
-
+                            if (File.Exists(sFileNameDest)) collection.Add($"File: {fileName} has been updated on source. Needs to be move to target.");
+                            else collection.Add($"File: {fileName} does not currently exist in target location.");
                         }
                     }
                 }

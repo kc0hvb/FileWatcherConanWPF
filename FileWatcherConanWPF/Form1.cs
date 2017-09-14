@@ -67,7 +67,7 @@ namespace FileWatcherConanWPF
 
         private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
-            if (button1.Enabled == false && ConfigurationManager.AppSettings["Automaticaly_Transfer_Files"] == "true")
+            if (button1.Enabled == false)
             {
                 var value = Pro.MainPortion();
                 string text = (String.Join(Environment.NewLine, value) + "\r\n");

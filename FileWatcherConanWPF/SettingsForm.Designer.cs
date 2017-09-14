@@ -57,28 +57,25 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(8, 39);
-            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label2.Location = new System.Drawing.Point(12, 60);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(122, 13);
+            this.label2.Size = new System.Drawing.Size(177, 20);
             this.label2.TabIndex = 1;
             this.label2.Text = "Workshop Pak Location";
             // 
             // workshopPakLocationText
             // 
-            this.workshopPakLocationText.Location = new System.Drawing.Point(195, 37);
-            this.workshopPakLocationText.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.workshopPakLocationText.Location = new System.Drawing.Point(292, 57);
             this.workshopPakLocationText.Name = "workshopPakLocationText";
-            this.workshopPakLocationText.Size = new System.Drawing.Size(147, 20);
+            this.workshopPakLocationText.Size = new System.Drawing.Size(218, 26);
             this.workshopPakLocationText.TabIndex = 3;
             // 
             // saveButton
             // 
             this.saveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.saveButton.Location = new System.Drawing.Point(312, 246);
-            this.saveButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.saveButton.Location = new System.Drawing.Point(468, 378);
             this.saveButton.Name = "saveButton";
-            this.saveButton.Size = new System.Drawing.Size(50, 19);
+            this.saveButton.Size = new System.Drawing.Size(75, 29);
             this.saveButton.TabIndex = 4;
             this.saveButton.Text = "Save";
             this.saveButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
@@ -87,71 +84,64 @@
             // 
             // modTargetLocationText
             // 
-            this.modTargetLocationText.Location = new System.Drawing.Point(195, 63);
-            this.modTargetLocationText.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.modTargetLocationText.Location = new System.Drawing.Point(292, 97);
             this.modTargetLocationText.Name = "modTargetLocationText";
-            this.modTargetLocationText.Size = new System.Drawing.Size(148, 20);
+            this.modTargetLocationText.Size = new System.Drawing.Size(220, 26);
             this.modTargetLocationText.TabIndex = 5;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(8, 65);
-            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label3.Location = new System.Drawing.Point(12, 100);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(103, 13);
+            this.label3.Size = new System.Drawing.Size(150, 20);
             this.label3.TabIndex = 7;
             this.label3.Text = "Sever Mod Location";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(8, 88);
-            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label4.Location = new System.Drawing.Point(12, 135);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(154, 13);
+            this.label4.Size = new System.Drawing.Size(231, 20);
             this.label4.TabIndex = 8;
             this.label4.Text = "Sleep Time for Comparing (sec)";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(8, 107);
-            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label5.Location = new System.Drawing.Point(12, 165);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(135, 13);
+            this.label5.Size = new System.Drawing.Size(238, 20);
             this.label5.TabIndex = 9;
-            this.label5.Text = "Automatically Transfer Files";
+            this.label5.Text = "Automatically Transfer PAK Files";
             // 
             // transferFilesCheck
             // 
             this.transferFilesCheck.AutoSize = true;
-            this.transferFilesCheck.Location = new System.Drawing.Point(402, 108);
-            this.transferFilesCheck.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.transferFilesCheck.Location = new System.Drawing.Point(603, 166);
             this.transferFilesCheck.Name = "transferFilesCheck";
-            this.transferFilesCheck.Size = new System.Drawing.Size(15, 14);
+            this.transferFilesCheck.Size = new System.Drawing.Size(22, 21);
             this.transferFilesCheck.TabIndex = 10;
             this.transferFilesCheck.UseVisualStyleBackColor = true;
             // 
             // sleepTimeInt
             // 
-            this.sleepTimeInt.Location = new System.Drawing.Point(336, 87);
-            this.sleepTimeInt.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.sleepTimeInt.Location = new System.Drawing.Point(504, 134);
             this.sleepTimeInt.Maximum = new decimal(new int[] {
             1000000000,
             0,
             0,
             0});
             this.sleepTimeInt.Name = "sleepTimeInt";
-            this.sleepTimeInt.Size = new System.Drawing.Size(80, 20);
+            this.sleepTimeInt.Size = new System.Drawing.Size(120, 26);
             this.sleepTimeInt.TabIndex = 11;
             // 
             // PakLocationButton
             // 
-            this.PakLocationButton.Location = new System.Drawing.Point(345, 35);
-            this.PakLocationButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.PakLocationButton.Location = new System.Drawing.Point(518, 54);
             this.PakLocationButton.Name = "PakLocationButton";
-            this.PakLocationButton.Size = new System.Drawing.Size(71, 21);
+            this.PakLocationButton.Size = new System.Drawing.Size(106, 32);
             this.PakLocationButton.TabIndex = 13;
             this.PakLocationButton.Text = "Browse";
             this.PakLocationButton.UseVisualStyleBackColor = true;
@@ -159,10 +149,9 @@
             // 
             // ModTargetButton
             // 
-            this.ModTargetButton.Location = new System.Drawing.Point(345, 60);
-            this.ModTargetButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ModTargetButton.Location = new System.Drawing.Point(518, 92);
             this.ModTargetButton.Name = "ModTargetButton";
-            this.ModTargetButton.Size = new System.Drawing.Size(71, 23);
+            this.ModTargetButton.Size = new System.Drawing.Size(106, 35);
             this.ModTargetButton.TabIndex = 14;
             this.ModTargetButton.Text = "Browse";
             this.ModTargetButton.UseVisualStyleBackColor = true;
@@ -171,19 +160,17 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(8, 130);
-            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label6.Location = new System.Drawing.Point(12, 200);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(116, 13);
+            this.label6.Size = new System.Drawing.Size(171, 20);
             this.label6.TabIndex = 15;
             this.label6.Text = "Conan Server Location";
             // 
             // ServerLocationButton
             // 
-            this.ServerLocationButton.Location = new System.Drawing.Point(345, 125);
-            this.ServerLocationButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ServerLocationButton.Location = new System.Drawing.Point(518, 192);
             this.ServerLocationButton.Name = "ServerLocationButton";
-            this.ServerLocationButton.Size = new System.Drawing.Size(71, 22);
+            this.ServerLocationButton.Size = new System.Drawing.Size(106, 34);
             this.ServerLocationButton.TabIndex = 16;
             this.ServerLocationButton.Text = "Browse";
             this.ServerLocationButton.UseVisualStyleBackColor = true;
@@ -191,10 +178,9 @@
             // 
             // SteamCmdLocationButton
             // 
-            this.SteamCmdLocationButton.Location = new System.Drawing.Point(345, 151);
-            this.SteamCmdLocationButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.SteamCmdLocationButton.Location = new System.Drawing.Point(518, 232);
             this.SteamCmdLocationButton.Name = "SteamCmdLocationButton";
-            this.SteamCmdLocationButton.Size = new System.Drawing.Size(71, 22);
+            this.SteamCmdLocationButton.Size = new System.Drawing.Size(106, 34);
             this.SteamCmdLocationButton.TabIndex = 17;
             this.SteamCmdLocationButton.Text = "Browse";
             this.SteamCmdLocationButton.UseVisualStyleBackColor = true;
@@ -203,55 +189,49 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(8, 156);
-            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label7.Location = new System.Drawing.Point(12, 240);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(102, 13);
+            this.label7.Size = new System.Drawing.Size(154, 20);
             this.label7.TabIndex = 18;
             this.label7.Text = "SteamCmd Location";
             // 
             // ConanServerLocationText
             // 
-            this.ConanServerLocationText.Location = new System.Drawing.Point(195, 128);
-            this.ConanServerLocationText.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ConanServerLocationText.Location = new System.Drawing.Point(292, 197);
             this.ConanServerLocationText.Name = "ConanServerLocationText";
-            this.ConanServerLocationText.Size = new System.Drawing.Size(147, 20);
+            this.ConanServerLocationText.Size = new System.Drawing.Size(218, 26);
             this.ConanServerLocationText.TabIndex = 19;
             // 
             // SteamCmdLocationText
             // 
-            this.SteamCmdLocationText.Location = new System.Drawing.Point(195, 154);
-            this.SteamCmdLocationText.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.SteamCmdLocationText.Location = new System.Drawing.Point(292, 237);
             this.SteamCmdLocationText.Name = "SteamCmdLocationText";
-            this.SteamCmdLocationText.Size = new System.Drawing.Size(147, 20);
+            this.SteamCmdLocationText.Size = new System.Drawing.Size(218, 26);
             this.SteamCmdLocationText.TabIndex = 20;
             // 
             // ValidationCheckBox
             // 
             this.ValidationCheckBox.AutoSize = true;
-            this.ValidationCheckBox.Location = new System.Drawing.Point(402, 177);
-            this.ValidationCheckBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ValidationCheckBox.Location = new System.Drawing.Point(603, 272);
             this.ValidationCheckBox.Name = "ValidationCheckBox";
-            this.ValidationCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.ValidationCheckBox.Size = new System.Drawing.Size(22, 21);
             this.ValidationCheckBox.TabIndex = 21;
             this.ValidationCheckBox.UseVisualStyleBackColor = true;
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(8, 177);
-            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label8.Location = new System.Drawing.Point(12, 272);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(139, 13);
+            this.label8.Size = new System.Drawing.Size(210, 20);
             this.label8.TabIndex = 22;
             this.label8.Text = "Validate Program on Startup";
             // 
             // BatchLocationButton
             // 
-            this.BatchLocationButton.Location = new System.Drawing.Point(345, 195);
-            this.BatchLocationButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.BatchLocationButton.Location = new System.Drawing.Point(518, 300);
             this.BatchLocationButton.Name = "BatchLocationButton";
-            this.BatchLocationButton.Size = new System.Drawing.Size(71, 22);
+            this.BatchLocationButton.Size = new System.Drawing.Size(106, 34);
             this.BatchLocationButton.TabIndex = 23;
             this.BatchLocationButton.Text = "Browse";
             this.BatchLocationButton.UseVisualStyleBackColor = true;
@@ -259,29 +239,26 @@
             // 
             // BatchFileText
             // 
-            this.BatchFileText.Location = new System.Drawing.Point(195, 198);
-            this.BatchFileText.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.BatchFileText.Location = new System.Drawing.Point(292, 305);
             this.BatchFileText.Name = "BatchFileText";
-            this.BatchFileText.Size = new System.Drawing.Size(147, 20);
+            this.BatchFileText.Size = new System.Drawing.Size(218, 26);
             this.BatchFileText.TabIndex = 24;
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(8, 200);
-            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label9.Location = new System.Drawing.Point(12, 308);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(98, 13);
+            this.label9.Size = new System.Drawing.Size(145, 20);
             this.label9.TabIndex = 25;
             this.label9.Text = "Batch File Location";
             // 
             // SettingsCancelButton
             // 
             this.SettingsCancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.SettingsCancelButton.Location = new System.Drawing.Point(366, 246);
-            this.SettingsCancelButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.SettingsCancelButton.Location = new System.Drawing.Point(549, 378);
             this.SettingsCancelButton.Name = "SettingsCancelButton";
-            this.SettingsCancelButton.Size = new System.Drawing.Size(50, 19);
+            this.SettingsCancelButton.Size = new System.Drawing.Size(75, 29);
             this.SettingsCancelButton.TabIndex = 26;
             this.SettingsCancelButton.Text = "Cancel";
             this.SettingsCancelButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
@@ -290,9 +267,9 @@
             // 
             // SettingsForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(425, 273);
+            this.ClientSize = new System.Drawing.Size(638, 420);
             this.ControlBox = false;
             this.Controls.Add(this.SettingsCancelButton);
             this.Controls.Add(this.label9);
@@ -317,7 +294,6 @@
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.workshopPakLocationText);
             this.Controls.Add(this.label2);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "SettingsForm";
             this.Text = "Settings";
             ((System.ComponentModel.ISupportInitialize)(this.sleepTimeInt)).EndInit();
