@@ -11,7 +11,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using System.Configuration;
 
 namespace FileWatcherConanWPF
 {
@@ -43,10 +43,10 @@ namespace FileWatcherConanWPF
             Dictionary<string, string> dConfigValues = MaPro.PullValuesFromConfig();
             if (dConfigValues["Conan_Server_Location"] != "" && File.Exists(dConfigValues["Conan_Server_Location"] + @"\ConanSandboxServer.exe"))
             {
-                ValidationConanServerButton.BeginInvoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Verify Server";}));
+                ValidationConanServerButton.Invoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Verify Server";}));
                 Application.DoEvents();
             }
-            else ValidationConanServerButton.BeginInvoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Install Server"; }));
+            else ValidationConanServerButton.Invoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Install Server"; }));
             Application.DoEvents();
         }
 
@@ -253,12 +253,7 @@ namespace FileWatcherConanWPF
 
         private void ValidationConanServerButton_Click(object sender, EventArgs e)
         {
-            bool bDidUpdate = MaPro.SteamCMDProcess(true);
-            if (bDidUpdate == true)
-            {
-                ValidationConanServerButton.Text = "Validate Server";
-                button1.Enabled = true;
-            }
+            MaPro.SteamCMDProcess(true);
         }
 
         public List<string> GetCheckedItems()
