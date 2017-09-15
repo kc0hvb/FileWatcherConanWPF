@@ -76,7 +76,6 @@ namespace FileWatcherConanWPF
 
             dValuesFromConfig.Add("PAK_Location", config.AppSettings.Settings["PAK_Location"].Value);
             dValuesFromConfig.Add("Sleep_Time", config.AppSettings.Settings["Sleep_Time"].Value);
-            dValuesFromConfig.Add("PAK_Target_Location", config.AppSettings.Settings["PAK_Target_Location"].Value);
             dValuesFromConfig.Add("Automaticaly_Transfer_Files", config.AppSettings.Settings["Automaticaly_Transfer_Files"].Value);
             dValuesFromConfig.Add("Conan_Server_Location", config.AppSettings.Settings["Conan_Server_Location"].Value);
             dValuesFromConfig.Add("SteamCmd_Location", config.AppSettings.Settings["SteamCmd_Location"].Value);
@@ -158,13 +157,20 @@ namespace FileWatcherConanWPF
         {
 
             string sSource = pSource["Conan_Server_Location"] + @"\ConanSandbox\Mods\modlist.txt";
+            string sSourceFolder = pSource["Conan_Server_Location"] + @"\ConanSandbox\Mods\";
             string[] lines = null;
             if (pSource["Conan_Server_Location"] != "")
             {
-                if (File.Exists(sSource))
+                if (!Directory.Exists(sSourceFolder)) Directory.CreateDirectory(sSourceFolder);
+                if (!File.Exists(sSource))
                 {
-                    lines = File.ReadAllLines(sSource);
+                    using (StreamWriter sw = new StreamWriter(sSource, true))
+                    {
+                        sw.Close();
+                    }
+                    
                 }
+                else lines = File.ReadAllLines(sSource);
             }
             return lines;
 
@@ -174,8 +180,7 @@ namespace FileWatcherConanWPF
         {
             Dictionary<string, string> dConfigValue = PullValuesFromConfig();
             string sSource = dConfigValue["Conan_Server_Location"] + @"\ConanSandbox\Mods\modlist.txt";
-
-            //File.WriteAllText(sSource, String.Empty);
+            
             string checkedItems = string.Empty;
             if (!File.Exists(sSource)) File.Create(sSource).Close();
             if (File.Exists(sSource))
@@ -247,6 +252,45 @@ namespace FileWatcherConanWPF
                     }
                 }
                 else MessageBox.Show("Please setup location of SteamCMD before preceeding.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            return bInstalled;
+        }
+
+        public bool SteamCMDProcess(bool bValidationEnable, string pSteamPath, string pServerLocation)
+        {
+            bool bInstalled = false;
+            Process process = new Process();
+            process.StartInfo.CreateNoWindow = true;
+            try
+            {
+                if (pSteamPath != null || pSteamPath != "")
+                {
+                    process.StartInfo.FileName = pSteamPath;
+                    string sConanServerLocation = pServerLocation;
+                    if (sConanServerLocation == "")
+                    {
+                        string sMessage = "Please select a location for the server.";
+                        process.StartInfo.Arguments = "";
+                        MessageBox.Show(sMessage);
+                        SettingsForm form = new SettingsForm();
+                        form.Show();
+                    }
+                    else
+                    {
+                        if (bValidationEnable == true) process.StartInfo.Arguments = $" +login anonymous +force_install_dir {sConanServerLocation} +app_update 443030 validate +exit";
+                        else process.StartInfo.Arguments = $" +login anonymous +force_install_dir {sConanServerLocation} +app_update 443030 +exit";
+                    }
+                    if (process.StartInfo.Arguments != "")
+                    {
+                        process.Start();
+                        process.WaitForExit();
+                        bInstalled = true;
+                    }
+                }
             }
             catch (Exception ex)
             {

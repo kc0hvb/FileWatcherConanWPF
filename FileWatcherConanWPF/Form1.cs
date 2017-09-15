@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Configuration;
+using System.Reflection;
 
 namespace FileWatcherConanWPF
 {
@@ -34,7 +35,7 @@ namespace FileWatcherConanWPF
             if (!File.Exists(sConanServerFile) || sConanServerInstalled == "")
             {
                 ValidationConanServerButton.Text = "Install Server";
-                button1.Enabled = false;
+                StartButton.Enabled = false;
             }
         }
         
@@ -43,7 +44,7 @@ namespace FileWatcherConanWPF
             Dictionary<string, string> dConfigValues = MaPro.PullValuesFromConfig();
             if (dConfigValues["Conan_Server_Location"] != "" && File.Exists(dConfigValues["Conan_Server_Location"] + @"\ConanSandboxServer.exe"))
             {
-                ValidationConanServerButton.Invoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Verify Server";}));
+                ValidationConanServerButton.Invoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Verify Server"; ServerStartButton.Enabled = true;}));
                 Application.DoEvents();
             }
             else ValidationConanServerButton.Invoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Install Server"; }));
@@ -67,7 +68,7 @@ namespace FileWatcherConanWPF
 
         private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
-            if (button1.Enabled == false)
+            if (StartButton.Enabled == false)
             {
                 var value = Pro.MainPortion();
                 string text = (String.Join(Environment.NewLine, value) + "\r\n");
@@ -146,20 +147,21 @@ namespace FileWatcherConanWPF
                     aTimer.Enabled = true;
                     FillCheckBoxList();
                     CheckBoxItemsInModText();
-                    button1.Enabled = false;
-                    button4.Enabled = true;
+                    StartButton.Enabled = false;
+                    StopButton.Enabled = true;
                     ServerStartButton.Enabled = true;
                 }
                 else
                 {
-                    button1.Enabled = true;
-                    button4.Enabled = false;
+                    StartButton.Enabled = true;
+                    StopButton.Enabled = false;
                     MessageBox.Show("Please choose a time to check the mods.");
                 }
             
             }
-            catch
+            catch (Exception ex)
             {
+
                 MessageBox.Show("Please Setup the conifguration first.");
             }
         }
@@ -179,8 +181,8 @@ namespace FileWatcherConanWPF
         private void button4_Click(object sender, EventArgs e)
         {
             //this.Invoke((MethodInvoker)(() => checkedListBox1.Items.Clear()));
-            button1.Enabled = true;
-            button4.Enabled = false;
+            StartButton.Enabled = true;
+            StopButton.Enabled = false;
             ServerStartButton.Enabled = false;
         }
 
@@ -215,15 +217,15 @@ namespace FileWatcherConanWPF
 
         private void startToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            button1.Enabled = false;
-            button4.Enabled = true;
+            StartButton.Enabled = false;
+            StopButton.Enabled = true;
         }
 
         private void stopToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //this.Invoke((MethodInvoker)(() => checkedListBox1.Items.Clear()));
-            button1.Enabled = true;
-            button4.Enabled = false;
+            StartButton.Enabled = true;
+            StopButton.Enabled = false;
         }
         #endregion
 
@@ -253,7 +255,38 @@ namespace FileWatcherConanWPF
 
         private void ValidationConanServerButton_Click(object sender, EventArgs e)
         {
-            MaPro.SteamCMDProcess(true);
+            if (ValidationConanServerButton.Text.ToString() == "Install Server")
+            {
+                string appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                string configFile = Path.Combine(appPath, "FileWatcherConanWPF.exe.config");
+                ExeConfigurationFileMap configFileMap = new ExeConfigurationFileMap();
+                configFileMap.ExeConfigFilename = configFile;
+                Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
+
+                string sSteamCmd = "";
+                string sServerLoc = "";
+                MessageBox.Show("Please select the location of SteamCmd File.");
+                OpenFileDialog fileDialog = new OpenFileDialog();
+                if (fileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    sSteamCmd = fileDialog.FileName;
+                }
+                MessageBox.Show("Please select the location of the Server");
+                using (var fbd = new FolderBrowserDialog())
+                {
+                    DialogResult result = fbd.ShowDialog();
+
+                    if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                    {
+                        sServerLoc = fbd.SelectedPath;                        
+                    }
+                }
+                if (sServerLoc.ToString() != "") config.AppSettings.Settings["Conan_Server_Location"].Value = sServerLoc.ToString();
+                if (sSteamCmd.ToString() != "") config.AppSettings.Settings["SteamCmd_Location"].Value = sSteamCmd.ToString();
+                bool bInstalled = MaPro.SteamCMDProcess(false, sSteamCmd, sServerLoc);
+                if (bInstalled == true) StartButton.Enabled = true;
+            }
+            else MaPro.SteamCMDProcess(true);
         }
 
         public List<string> GetCheckedItems()
@@ -269,7 +302,7 @@ namespace FileWatcherConanWPF
 
         private void modListBox_ItemCheck(Object sender, ItemCheckEventArgs e)
         {
-            if (button1.Enabled == false && modListBox.SelectedItem.ToString() != null)
+            if (StartButton.Enabled == false && modListBox.SelectedItem.ToString() != null)
             {
                 string value = modListBox.SelectedItem.ToString() + ".pak";
                 if (e.NewValue.ToString() == "Checked") MaPro.AddingModsInText(value);
@@ -282,12 +315,15 @@ namespace FileWatcherConanWPF
             Dictionary<string, string> dConfigValues = MaPro.PullValuesFromConfig();
             string[] sCheckedValues = MaPro.GetTextFromTextFile(dConfigValues);
             var myOtherList = modListBox.Items.Cast<String>().ToList();
-            foreach (string i in sCheckedValues)
+            if (sCheckedValues != null)
             {
-                int curIndex = -1;
-                string sFileNamePak = i.Replace(".pak", "");
-                curIndex = modListBox.Items.IndexOf(sFileNamePak);
-                if (curIndex > -1) modListBox.SetItemChecked(curIndex, true);
+                foreach (string i in sCheckedValues)
+                {
+                    int curIndex = -1;
+                    string sFileNamePak = i.Replace(".pak", "");
+                    curIndex = modListBox.Items.IndexOf(sFileNamePak);
+                    if (curIndex > -1) modListBox.SetItemChecked(curIndex, true);
+                }
             }
         }
 
