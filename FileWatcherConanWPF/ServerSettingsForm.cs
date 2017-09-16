@@ -29,6 +29,7 @@ namespace FileWatcherConanWPF
                 AddingToList(sGameIniFile);
                 AddingToList(sServerSettings);
             }
+            
         }
         private void AddingToList(string pSource)
         {

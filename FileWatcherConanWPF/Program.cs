@@ -303,10 +303,10 @@ namespace FileWatcherConanWPF
         {
             Dictionary<string, string> dictionary = PullValuesFromConfig();
             Process process = new Process();
-            if (dictionary["Batch_Location"] != "")
+            if (dictionary["Conan_Server_Location"] != "")
             {
-                process.StartInfo.FileName = dictionary["Batch_Location"];
-                process.StartInfo.WorkingDirectory = Path.GetDirectoryName(dictionary["Batch_Location"]);
+                process.StartInfo.FileName = dictionary["Conan_Server_Location"] + @"\ConanSandboxServer.exe";
+                process.StartInfo.WorkingDirectory = Path.GetDirectoryName(dictionary["Conan_Server_Location"]);
                 process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 process.Start();
             }
@@ -330,10 +330,8 @@ namespace FileWatcherConanWPF
             Process p = Process.GetProcessesByName("ConanSandboxServer-Win64-Test").FirstOrDefault();
             if (p != null)
             {
-                IntPtr h = p.MainWindowHandle;
-                SetForegroundWindow(h);
-                SendKeys.SendWait("^(C)");
-                SendKeys.Flush();
+                p.CloseMainWindow();
+                p.Close();
             }
         }
         #endregion

@@ -335,15 +335,29 @@ namespace FileWatcherConanWPF
         private void severSettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Dictionary<string, string> dictionary = MaPro.PullValuesFromConfig();
-            bool bIsRunning = MaPro.ServerIsRunning();
-            if (bIsRunning == false && dictionary["Conan_Server_Location"] != "")
+            if (File.Exists(dictionary["Conan_Server_Location"] + @"\ConanSandbox\Saved\Config\WindowsServer\Game.ini"))
             {
-                ServerSettingsForm form = new ServerSettingsForm();
-                form.Show();
+
+                bool bIsRunning = MaPro.ServerIsRunning();
+                if (bIsRunning == false && dictionary["Conan_Server_Location"] != "")
+                {
+                    ServerSettingsForm form = new ServerSettingsForm();
+                    form.Show();
+                }
+                else
+                {
+                    MessageBox.Show("Please stop the server before editing.");
+                }
             }
             else
             {
-                MessageBox.Show("Please stop the server before editing.");
+                MessageBox.Show("Please wait a moment while we create the files for the server settings.");
+                MaPro.StartServer();
+                Thread.Sleep(30000);
+                MaPro.StopServer();
+                Thread.Sleep(5000);
+                ServerSettingsForm form = new ServerSettingsForm();
+                form.Show();
             }
         }
     }
