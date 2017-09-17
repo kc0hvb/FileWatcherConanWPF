@@ -47,9 +47,6 @@
             this.SteamCmdLocationText = new System.Windows.Forms.TextBox();
             this.ValidationCheckBox = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
-            this.BatchLocationButton = new System.Windows.Forms.Button();
-            this.BatchFileText = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
             this.SettingsCancelButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.sleepTimeInt)).BeginInit();
             this.SuspendLayout();
@@ -59,9 +56,9 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(12, 60);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(177, 20);
+            this.label2.Size = new System.Drawing.Size(232, 20);
             this.label2.TabIndex = 1;
-            this.label2.Text = "Workshop Pak Location";
+            this.label2.Text = "Workshop/Source Pak Location";
             // 
             // workshopPakLocationText
             // 
@@ -94,9 +91,9 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(12, 100);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(150, 20);
+            this.label3.Size = new System.Drawing.Size(200, 20);
             this.label3.TabIndex = 7;
-            this.label3.Text = "Sever Mod Location";
+            this.label3.Text = "Sever Mod/Target Location";
             // 
             // label4
             // 
@@ -227,32 +224,6 @@
             this.label8.TabIndex = 22;
             this.label8.Text = "Validate Program on Startup";
             // 
-            // BatchLocationButton
-            // 
-            this.BatchLocationButton.Location = new System.Drawing.Point(518, 300);
-            this.BatchLocationButton.Name = "BatchLocationButton";
-            this.BatchLocationButton.Size = new System.Drawing.Size(106, 34);
-            this.BatchLocationButton.TabIndex = 23;
-            this.BatchLocationButton.Text = "Browse";
-            this.BatchLocationButton.UseVisualStyleBackColor = true;
-            this.BatchLocationButton.Click += new System.EventHandler(this.BatchLocationButton_Click);
-            // 
-            // BatchFileText
-            // 
-            this.BatchFileText.Location = new System.Drawing.Point(292, 305);
-            this.BatchFileText.Name = "BatchFileText";
-            this.BatchFileText.Size = new System.Drawing.Size(218, 26);
-            this.BatchFileText.TabIndex = 24;
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(12, 308);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(145, 20);
-            this.label9.TabIndex = 25;
-            this.label9.Text = "Batch File Location";
-            // 
             // SettingsCancelButton
             // 
             this.SettingsCancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -272,9 +243,6 @@
             this.ClientSize = new System.Drawing.Size(638, 420);
             this.ControlBox = false;
             this.Controls.Add(this.SettingsCancelButton);
-            this.Controls.Add(this.label9);
-            this.Controls.Add(this.BatchFileText);
-            this.Controls.Add(this.BatchLocationButton);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.ValidationCheckBox);
             this.Controls.Add(this.SteamCmdLocationText);
@@ -322,9 +290,6 @@
         private System.Windows.Forms.TextBox SteamCmdLocationText;
         private System.Windows.Forms.CheckBox ValidationCheckBox;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Button BatchLocationButton;
-        private System.Windows.Forms.TextBox BatchFileText;
-        private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Button SettingsCancelButton;
     }
 }

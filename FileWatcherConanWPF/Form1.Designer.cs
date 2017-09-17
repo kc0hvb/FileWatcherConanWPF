@@ -50,6 +50,9 @@
             this.ServerStartButton = new System.Windows.Forms.Button();
             this.ValidationConanServerButton = new System.Windows.Forms.Button();
             this.ExitButton = new System.Windows.Forms.Button();
+            this.ArgumentTextBox = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.versionNumberToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -116,7 +119,8 @@
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.severSettingsToolStripMenuItem});
+            this.severSettingsToolStripMenuItem,
+            this.versionNumberToolStripMenuItem});
             resources.ApplyResources(this.menuStrip1, "menuStrip1");
             this.menuStrip1.Name = "menuStrip1";
             // 
@@ -189,11 +193,29 @@
             this.ExitButton.UseVisualStyleBackColor = true;
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
+            // ArgumentTextBox
+            // 
+            resources.ApplyResources(this.ArgumentTextBox, "ArgumentTextBox");
+            this.ArgumentTextBox.Name = "ArgumentTextBox";
+            this.ArgumentTextBox.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
+            // 
+            // label1
+            // 
+            resources.ApplyResources(this.label1, "label1");
+            this.label1.Name = "label1";
+            // 
+            // versionNumberToolStripMenuItem
+            // 
+            this.versionNumberToolStripMenuItem.Name = "versionNumberToolStripMenuItem";
+            resources.ApplyResources(this.versionNumberToolStripMenuItem, "versionNumberToolStripMenuItem");
+            // 
             // ConanModWatcher
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ControlBox = false;
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.ArgumentTextBox);
             this.Controls.Add(this.ExitButton);
             this.Controls.Add(this.ValidationConanServerButton);
             this.Controls.Add(this.ServerStartButton);
@@ -234,6 +256,9 @@
         private System.Windows.Forms.Button ValidationConanServerButton;
         private System.Windows.Forms.Button ExitButton;
         private System.Windows.Forms.ToolStripMenuItem severSettingsToolStripMenuItem;
+        private System.Windows.Forms.TextBox ArgumentTextBox;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ToolStripMenuItem versionNumberToolStripMenuItem;
     }
 }
 

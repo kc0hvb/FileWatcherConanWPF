@@ -67,22 +67,32 @@ namespace FileWatcherConanWPF
         #region Getting information from Configuration file.
         public Dictionary<string, string> PullValuesFromConfig()
         {
-            Dictionary<string, string> dValuesFromConfig = new Dictionary<string, string>();
-            string appPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            string configFile = Path.Combine(appPath, "FileWatcherConanWPF.exe.config");
-            ExeConfigurationFileMap configFileMap = new ExeConfigurationFileMap();
-            configFileMap.ExeConfigFilename = configFile;
-            Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
+            try
+            {
+                Dictionary<string, string> dValuesFromConfig = new Dictionary<string, string>();
+                string appPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                string configFile = Path.Combine(appPath, "Conan Exiles Server Admin.exe.config");
+                ExeConfigurationFileMap configFileMap = new ExeConfigurationFileMap();
+                configFileMap.ExeConfigFilename = configFile;
+                Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
 
-            dValuesFromConfig.Add("PAK_Location", config.AppSettings.Settings["PAK_Location"].Value);
-            dValuesFromConfig.Add("Sleep_Time", config.AppSettings.Settings["Sleep_Time"].Value);
-            dValuesFromConfig.Add("Automaticaly_Transfer_Files", config.AppSettings.Settings["Automaticaly_Transfer_Files"].Value);
-            dValuesFromConfig.Add("Conan_Server_Location", config.AppSettings.Settings["Conan_Server_Location"].Value);
-            dValuesFromConfig.Add("SteamCmd_Location", config.AppSettings.Settings["SteamCmd_Location"].Value);
-            dValuesFromConfig.Add("Validate_Conan", config.AppSettings.Settings["Validate_Conan"].Value);
-            dValuesFromConfig.Add("Batch_Location", config.AppSettings.Settings["Batch_Location"].Value);
-
-            return dValuesFromConfig;
+                dValuesFromConfig.Add("PAK_Location", config.AppSettings.Settings["PAK_Location"].Value);
+                dValuesFromConfig.Add("PAK_Target_Location", config.AppSettings.Settings["PAK_Target_Location"].Value);
+                dValuesFromConfig.Add("Sleep_Time", config.AppSettings.Settings["Sleep_Time"].Value);
+                dValuesFromConfig.Add("Automaticaly_Transfer_Files", config.AppSettings.Settings["Automaticaly_Transfer_Files"].Value);
+                dValuesFromConfig.Add("Conan_Server_Location", config.AppSettings.Settings["Conan_Server_Location"].Value);
+                dValuesFromConfig.Add("SteamCmd_Location", config.AppSettings.Settings["SteamCmd_Location"].Value);
+                dValuesFromConfig.Add("Validate_Conan", config.AppSettings.Settings["Validate_Conan"].Value);
+                dValuesFromConfig.Add("Batch_Location", config.AppSettings.Settings["Batch_Location"].Value);
+                dValuesFromConfig.Add("Arguements_Server_Start", config.AppSettings.Settings["Arguements_Server_Start"].Value);
+                return dValuesFromConfig;
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+                return null;
+            }
+            
         }
         #endregion
 
@@ -97,10 +107,6 @@ namespace FileWatcherConanWPF
                 string sSource = dConfigValue["Conan_Server_Location"] + @"\ConanSandbox\Mods\modlist.txt";
                 string sPakSource = dConfigValue["PAK_Location"];
                 string sPakTarget = dConfigValue["PAK_Target_Location"];
-                if (!File.Exists(sSource))
-                {
-                    File.Create(sSource);
-                }
 
                 string[] fileEntries = Directory.GetFiles(sPakSource, "*.*", System.IO.SearchOption.AllDirectories);
 
@@ -229,7 +235,7 @@ namespace FileWatcherConanWPF
             {
                 if (dConfigValue["SteamCmd_Location"] != "")
                 {
-                    process.StartInfo.FileName = (dConfigValue["SteamCmd_Location"]) + @"\steamcmd.exe";
+                    process.StartInfo.FileName = (dConfigValue["SteamCmd_Location"]);
                     string sConanServerLocation = dConfigValue["Conan_Server_Location"];
                     if (dConfigValue["Conan_Server_Location"] == "")
                     {
@@ -299,13 +305,14 @@ namespace FileWatcherConanWPF
             return bInstalled;
         }
 
-        public void StartServer()
+        public void StartServer(string pArguments)
         {
             Dictionary<string, string> dictionary = PullValuesFromConfig();
             Process process = new Process();
             if (dictionary["Conan_Server_Location"] != "")
             {
                 process.StartInfo.FileName = dictionary["Conan_Server_Location"] + @"\ConanSandboxServer.exe";
+                process.StartInfo.Arguments = pArguments; //"-log -MULTIHOME=192.168.0.103 -QueryPort=27016";
                 process.StartInfo.WorkingDirectory = Path.GetDirectoryName(dictionary["Conan_Server_Location"]);
                 process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 process.Start();
@@ -330,8 +337,12 @@ namespace FileWatcherConanWPF
             Process p = Process.GetProcessesByName("ConanSandboxServer-Win64-Test").FirstOrDefault();
             if (p != null)
             {
-                p.CloseMainWindow();
-                p.Close();
+                //p.CloseMainWindow();
+                //p.Close();
+                IntPtr h = p.MainWindowHandle;
+                SetForegroundWindow(h);
+                SendKeys.SendWait("^(C)");
+                p.WaitForExit();
             }
         }
         #endregion

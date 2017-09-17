@@ -16,8 +16,6 @@ namespace FileWatcherConanWPF
     {
         public SettingsForm()
         {
-            Form form = Application.OpenForms["ServerSettingsForm"];
-            if (form != null) form.Close();
             InitializeComponent();
             settingValues();
         }
@@ -27,7 +25,7 @@ namespace FileWatcherConanWPF
             try
             {
                 string appPath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                string configFile = System.IO.Path.Combine(appPath, "FileWatcherConanWPF.exe.config");
+                string configFile = System.IO.Path.Combine(appPath, "Conan Exiles Server Admin.exe.config");
                 ExeConfigurationFileMap configFileMap = new ExeConfigurationFileMap();
                 configFileMap.ExeConfigFilename = configFile;
                 Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
@@ -43,7 +41,6 @@ namespace FileWatcherConanWPF
                 else transferFilesCheck.Checked = false;
                 ConanServerLocationText.Text = config.AppSettings.Settings["Conan_Server_Location"].Value;
                 SteamCmdLocationText.Text = config.AppSettings.Settings["SteamCmd_Location"].Value;
-                BatchFileText.Text = config.AppSettings.Settings["Batch_Location"].Value;
             }
             catch (Exception ex)
             {
@@ -54,7 +51,7 @@ namespace FileWatcherConanWPF
         private void saveButton_Click(object sender, EventArgs e)
         {
             string appPath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string configFile = System.IO.Path.Combine(appPath, "FileWatcherConanWPF.exe.config");
+            string configFile = System.IO.Path.Combine(appPath, "Conan Exiles Server Admin.exe.config");
             ExeConfigurationFileMap configFileMap = new ExeConfigurationFileMap();
             configFileMap.ExeConfigFilename = configFile;
             Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
@@ -69,7 +66,6 @@ namespace FileWatcherConanWPF
             if (SteamCmdLocationText.Text != "") config.AppSettings.Settings["SteamCmd_Location"].Value = SteamCmdLocationText.Text.ToString();
             if (ValidationCheckBox.Checked == true) config.AppSettings.Settings["Validate_Conan"].Value = "true";
             else config.AppSettings.Settings["Validate_Conan"].Value = "false";
-            if (BatchFileText.Text != "") config.AppSettings.Settings["Batch_Location"].Value = BatchFileText.Text.ToString();
             config.Save();
 
             Application.OpenForms[1].Close();
@@ -127,18 +123,6 @@ namespace FileWatcherConanWPF
             {
                 string sSteamcCmdLocation = folderBrowser.SelectedPath;
                 SteamCmdLocationText.Text = sSteamcCmdLocation;
-            }
-        }
-
-        private void BatchLocationButton_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog fileDialog = new OpenFileDialog();
-            fileDialog.Filter = "Batch File|*.bat";
-            fileDialog.Multiselect = false;
-            if (fileDialog.ShowDialog() == DialogResult.OK)
-            {
-                string sBatchTextFile = fileDialog.FileName;
-                BatchFileText.Text = sBatchTextFile;
             }
         }
 

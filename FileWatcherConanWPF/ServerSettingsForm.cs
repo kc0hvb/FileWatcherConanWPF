@@ -20,8 +20,6 @@ namespace FileWatcherConanWPF
             Dictionary<string, string> dictionary = MaPro.PullValuesFromConfig();
             if (dictionary["Conan_Server_Location"] != "")
             {
-                Form form = Application.OpenForms["SettingsForm"];
-                if (form != null) form.Close();
                 InitializeComponent();
                 string sServerSource = dictionary["Conan_Server_Location"] + @"\ConanSandbox\Saved\Config\WindowsServer\";
                 string sGameIniFile = sServerSource + "Game.ini";
@@ -51,6 +49,8 @@ namespace FileWatcherConanWPF
                             ServerSettingsGridView.Rows.Add(sDescription, sValue, false);
                     }
                 }
+                if (pSource.Contains("Game") && !lines.Contains("[/Script/Engine.GameSession]"))
+                    GameIniTextBox.Text += "[/Script/Engine.GameSession]\r\nMaxPlayers = 3\r\n";
             }
         }
 

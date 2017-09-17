@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Configuration;
 using System.Reflection;
+using System.Deployment.Application;
 
 namespace FileWatcherConanWPF
 {
@@ -28,14 +29,21 @@ namespace FileWatcherConanWPF
             Dictionary<string, string> dConfigValues = MaPro.PullValuesFromConfig();
             string sConanServerInstalled = dConfigValues["Conan_Server_Location"];
             string sConanServerFile = sConanServerInstalled + @"\ConanSandboxServer.exe";
+            if (dConfigValues["Arguements_Server_Start"] != "") ArgumentTextBox.Text = dConfigValues["Arguements_Server_Start"];
+            else ArgumentTextBox.Text = "-log -QueryPort=27016";
             System.Timers.Timer tButtonTimer = new System.Timers.Timer();
             tButtonTimer.Elapsed += new ElapsedEventHandler(SetInstallVerifyServer);
             tButtonTimer.Interval = Int32.Parse("5000");
             tButtonTimer.Enabled = true;
+            stopToolStripMenuItem.Enabled = false;
+            var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            versionNumberToolStripMenuItem.Text = String.Format("Version {0}", version);
             if (!File.Exists(sConanServerFile) || sConanServerInstalled == "")
             {
-                ValidationConanServerButton.Text = "Install Server";
-                StartButton.Enabled = false;
+                ValidationConanServerButton.Text = "Install/Setup Server";
+                StartButton.Enabled = true;
+                severSettingsToolStripMenuItem.Enabled = false;
+                ArgumentTextBox.Enabled = false;
             }
         }
         
@@ -44,11 +52,15 @@ namespace FileWatcherConanWPF
             Dictionary<string, string> dConfigValues = MaPro.PullValuesFromConfig();
             if (dConfigValues["Conan_Server_Location"] != "" && File.Exists(dConfigValues["Conan_Server_Location"] + @"\ConanSandboxServer.exe"))
             {
-                ValidationConanServerButton.Invoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Verify Server"; ServerStartButton.Enabled = true;}));
+                ValidationConanServerButton.Invoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Verify Server"; ServerStartButton.Enabled = true; ArgumentTextBox.Enabled = true; severSettingsToolStripMenuItem.Enabled = true; }));
                 Application.DoEvents();
             }
-            else ValidationConanServerButton.Invoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Install Server"; }));
+            else ValidationConanServerButton.Invoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Install/Setup Server"; severSettingsToolStripMenuItem.Enabled = false; }));
             Application.DoEvents();
+            if (StartButton.Enabled == false) startToolStripMenuItem.Enabled = false;
+            else startToolStripMenuItem.Enabled = true;
+            if (StopButton.Enabled == false) stopToolStripMenuItem.Enabled = false;
+            else stopToolStripMenuItem.Enabled = true;
         }
 
         delegate void SetTextCallback(string text);
@@ -76,6 +88,8 @@ namespace FileWatcherConanWPF
                 if (isEmpty) { }
                 else SetText(text);
                 Application.DoEvents();
+                Dictionary<string, string> dictionary = MaPro.PullValuesFromConfig();
+                if (dictionary["Conan_Server_Location"] != "") FillCheckBoxList();
             }
         }
 
@@ -104,7 +118,7 @@ namespace FileWatcherConanWPF
             if (ConfigurationManager.AppSettings["PAK_Target_Location"] != "")
             {
                 string sTarget = ConfigurationManager.AppSettings["PAK_Target_Location"];
-                string[] fileEntries = Directory.GetFiles(sTarget, "*.*", System.IO.SearchOption.AllDirectories);
+                string[] fileEntries = Directory.GetFiles(sTarget, "*.*", SearchOption.AllDirectories);
                 foreach (string fileName in fileEntries)
                 {
                     if (fileName.Contains(".pak"))
@@ -136,34 +150,9 @@ namespace FileWatcherConanWPF
         #region Button Code
         private void button1_Click_1(object sender, EventArgs e)
         {
-            try
-            {
-                Dictionary<string, string> dictionary = MaPro.PullValuesFromConfig();
-                if (dictionary["Sleep_Time"] != "")
-                {
-                    System.Timers.Timer aTimer = new System.Timers.Timer();
-                    aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-                    aTimer.Interval = Int32.Parse(dictionary["Sleep_Time"]);
-                    aTimer.Enabled = true;
-                    FillCheckBoxList();
-                    CheckBoxItemsInModText();
-                    StartButton.Enabled = false;
-                    StopButton.Enabled = true;
-                    ServerStartButton.Enabled = true;
-                }
-                else
-                {
-                    StartButton.Enabled = true;
-                    StopButton.Enabled = false;
-                    MessageBox.Show("Please choose a time to check the mods.");
-                }
-            
-            }
-            catch (Exception ex)
-            {
-
-                MessageBox.Show("Please Setup the conifguration first.");
-            }
+            StartProgram();
+            startToolStripMenuItem.Enabled = false;
+            stopToolStripMenuItem.Enabled = true;
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -183,6 +172,8 @@ namespace FileWatcherConanWPF
             //this.Invoke((MethodInvoker)(() => checkedListBox1.Items.Clear()));
             StartButton.Enabled = true;
             StopButton.Enabled = false;
+            stopToolStripMenuItem.Enabled = false;
+            startToolStripMenuItem.Enabled = true;
             ServerStartButton.Enabled = false;
         }
 
@@ -217,8 +208,7 @@ namespace FileWatcherConanWPF
 
         private void startToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            StartButton.Enabled = false;
-            StopButton.Enabled = true;
+            StartProgram();
         }
 
         private void stopToolStripMenuItem_Click(object sender, EventArgs e)
@@ -232,7 +222,7 @@ namespace FileWatcherConanWPF
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SettingsForm frm = new SettingsForm();
-            frm.Show();
+            frm.ShowDialog();
         }
 
         private void ServerStartButton_Click(object sender, EventArgs e)
@@ -243,7 +233,7 @@ namespace FileWatcherConanWPF
             if (ServerStartButton.Text == "Start Server")
             {
                 MaPro.SteamCMDProcess(bValidate);
-                MaPro.StartServer();
+                MaPro.StartServer(ArgumentTextBox.Text.ToString());
                 ServerStartButton.Text = "Stop Server";
             }
             else if (ServerStartButton.Text == "Stop Server")
@@ -255,10 +245,10 @@ namespace FileWatcherConanWPF
 
         private void ValidationConanServerButton_Click(object sender, EventArgs e)
         {
-            if (ValidationConanServerButton.Text.ToString() == "Install Server")
+            if (ValidationConanServerButton.Text.ToString() == "Install/Setup Server")
             {
                 string appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                string configFile = Path.Combine(appPath, "FileWatcherConanWPF.exe.config");
+                string configFile = Path.Combine(appPath, "Conan Exiles Server Admin.exe.config");
                 ExeConfigurationFileMap configFileMap = new ExeConfigurationFileMap();
                 configFileMap.ExeConfigFilename = configFile;
                 Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
@@ -283,8 +273,13 @@ namespace FileWatcherConanWPF
                 }
                 if (sServerLoc.ToString() != "") config.AppSettings.Settings["Conan_Server_Location"].Value = sServerLoc.ToString();
                 if (sSteamCmd.ToString() != "") config.AppSettings.Settings["SteamCmd_Location"].Value = sSteamCmd.ToString();
+                config.Save();
                 bool bInstalled = MaPro.SteamCMDProcess(false, sSteamCmd, sServerLoc);
-                if (bInstalled == true) StartButton.Enabled = true;
+                if (bInstalled == true)
+                {
+                    StartButton.Enabled = true;
+                    ArgumentTextBox.Enabled = true;
+                }
             }
             else MaPro.SteamCMDProcess(true);
         }
@@ -342,7 +337,7 @@ namespace FileWatcherConanWPF
                 if (bIsRunning == false && dictionary["Conan_Server_Location"] != "")
                 {
                     ServerSettingsForm form = new ServerSettingsForm();
-                    form.Show();
+                    form.ShowDialog();
                 }
                 else
                 {
@@ -352,11 +347,70 @@ namespace FileWatcherConanWPF
             else
             {
                 MessageBox.Show("Please wait a moment while we create the files for the server settings.");
-                MaPro.StartServer();
+                MaPro.StartServer(ArgumentTextBox.Text.ToString());
                 Thread.Sleep(30000);
                 MaPro.StopServer();
                 Thread.Sleep(5000);
                 ServerSettingsForm form = new ServerSettingsForm();
+                form.Show();
+            }
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            string appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string configFile = Path.Combine(appPath, "Conan Exiles Server Admin.exe.config");
+            ExeConfigurationFileMap configFileMap = new ExeConfigurationFileMap();
+            configFileMap.ExeConfigFilename = configFile;
+            Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
+            config.AppSettings.Settings["Arguements_Server_Start"].Value = ArgumentTextBox.Text.ToString();
+            config.Save();
+        }
+
+        private void StartProgram()
+        {
+            try
+            {
+                Dictionary<string, string> dictionary = MaPro.PullValuesFromConfig();
+                if (dictionary["Conan_Server_Location"] != "" && !Directory.Exists(dictionary["Conan_Server_Location"] + @"\ConanSandbox\Mods\"))
+                {
+                    Directory.CreateDirectory(dictionary["Conan_Server_Location"] + @"\ConanSandbox\Mods\");
+                    string sSource = dictionary["Conan_Server_Location"] + @"\ConanSandbox\Mods\modlist.txt";
+                    if (!File.Exists(sSource))
+                    {
+                        StreamWriter sw = new StreamWriter(sSource);
+                        sw.Close();
+                    }
+                }
+                if (dictionary["Sleep_Time"] != "" && dictionary["PAK_Location"] != "" && dictionary["PAK_Target_Location"] != "")
+                {
+                    System.Timers.Timer aTimer = new System.Timers.Timer();
+                    aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+                    aTimer.Interval = Int32.Parse(dictionary["Sleep_Time"]);
+                    aTimer.Enabled = true;
+                    if (dictionary["Conan_Server_Location"] != "")
+                    {
+                        FillCheckBoxList();
+                        CheckBoxItemsInModText();
+                    }
+                    StartButton.Enabled = false;
+                    StopButton.Enabled = true;
+                    ServerStartButton.Enabled = true;
+                }
+                else
+                {
+                    StartButton.Enabled = true;
+                    StopButton.Enabled = false;
+                    MessageBox.Show("Please choose the source and target location for the PAK files. Also the time interval in the settings.\r\nNote: Target location could mean the server location or a shared folder location.");
+                    SettingsForm settingsForm = new SettingsForm();
+                    settingsForm.Show();
+                }
+
+            }
+            catch
+            {
+                MessageBox.Show("Please Setup the conifguration first.");
+                SettingsForm form = new SettingsForm();
                 form.Show();
             }
         }
