@@ -72,29 +72,60 @@ namespace FileWatcherConanWPF
                 Dictionary<string, string> dValuesFromConfig = new Dictionary<string, string>();
                 string appPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
                 string configFile = Path.Combine(appPath, "Conan Exiles Server Admin.exe.config");
-                ExeConfigurationFileMap configFileMap = new ExeConfigurationFileMap();
-                configFileMap.ExeConfigFilename = configFile;
-                Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
+                bool bIsInUse = IsFileLocked(new FileInfo(configFile));
+                if (bIsInUse == false)
+                {
+                    ExeConfigurationFileMap configFileMap = new ExeConfigurationFileMap();
+                    configFileMap.ExeConfigFilename = configFile;
+                    Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
 
-                dValuesFromConfig.Add("PAK_Location", config.AppSettings.Settings["PAK_Location"].Value);
-                dValuesFromConfig.Add("PAK_Target_Location", config.AppSettings.Settings["PAK_Target_Location"].Value);
-                dValuesFromConfig.Add("Sleep_Time", config.AppSettings.Settings["Sleep_Time"].Value);
-                dValuesFromConfig.Add("Automaticaly_Transfer_Files", config.AppSettings.Settings["Automaticaly_Transfer_Files"].Value);
-                dValuesFromConfig.Add("Conan_Server_Location", config.AppSettings.Settings["Conan_Server_Location"].Value);
-                dValuesFromConfig.Add("SteamCmd_Location", config.AppSettings.Settings["SteamCmd_Location"].Value);
-                dValuesFromConfig.Add("Validate_Conan", config.AppSettings.Settings["Validate_Conan"].Value);
-                dValuesFromConfig.Add("Batch_Location", config.AppSettings.Settings["Batch_Location"].Value);
-                dValuesFromConfig.Add("Arguements_Server_Start", config.AppSettings.Settings["Arguements_Server_Start"].Value);
-                return dValuesFromConfig;
+                    dValuesFromConfig.Add("PAK_Location", config.AppSettings.Settings["PAK_Location"].Value);
+                    dValuesFromConfig.Add("PAK_Target_Location", config.AppSettings.Settings["PAK_Target_Location"].Value);
+                    dValuesFromConfig.Add("Sleep_Time", config.AppSettings.Settings["Sleep_Time"].Value);
+                    dValuesFromConfig.Add("Automaticaly_Transfer_Files", config.AppSettings.Settings["Automaticaly_Transfer_Files"].Value);
+                    dValuesFromConfig.Add("Conan_Server_Location", config.AppSettings.Settings["Conan_Server_Location"].Value);
+                    dValuesFromConfig.Add("SteamCmd_Location", config.AppSettings.Settings["SteamCmd_Location"].Value);
+                    dValuesFromConfig.Add("Validate_Conan", config.AppSettings.Settings["Validate_Conan"].Value);
+                    dValuesFromConfig.Add("Batch_Location", config.AppSettings.Settings["Batch_Location"].Value);
+                    dValuesFromConfig.Add("Arguements_Server_Start", config.AppSettings.Settings["Arguements_Server_Start"].Value);
+                    return dValuesFromConfig;
+                }
+                else return null;
             }
             catch(Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                //MessageBox.Show(ex.ToString());
                 return null;
             }
             
         }
         #endregion
+
+        protected virtual bool IsFileLocked(FileInfo file)
+        {
+            FileStream stream = null;
+
+            try
+            {
+                stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None);
+            }
+            catch (IOException)
+            {
+                //the file is unavailable because it is:
+                //still being written to
+                //or being processed by another thread
+                //or does not exist (has already been processed)
+                return true;
+            }
+            finally
+            {
+                if (stream != null)
+                    stream.Close();
+            }
+
+            //file is not locked
+            return false;
+        }
 
         #region The Actual file watching and copying of Mod files.
         public ObservableCollection<string> ProcessFileWatcher()

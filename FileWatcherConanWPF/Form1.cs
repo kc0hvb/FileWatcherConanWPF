@@ -46,21 +46,24 @@ namespace FileWatcherConanWPF
                 ArgumentTextBox.Enabled = false;
             }
         }
-        
+
         private void SetInstallVerifyServer(object source, ElapsedEventArgs e)
         {
             Dictionary<string, string> dConfigValues = MaPro.PullValuesFromConfig();
-            if (dConfigValues["Conan_Server_Location"] != "" && File.Exists(dConfigValues["Conan_Server_Location"] + @"\ConanSandboxServer.exe"))
+            if (dConfigValues != null)
             {
-                ValidationConanServerButton.Invoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Verify Server"; ServerStartButton.Enabled = true; ArgumentTextBox.Enabled = true; severSettingsToolStripMenuItem.Enabled = true; }));
+                if (dConfigValues["Conan_Server_Location"] != "" && File.Exists(dConfigValues["Conan_Server_Location"] + @"\ConanSandboxServer.exe"))
+                {
+                    ValidationConanServerButton.Invoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Verify Server"; ServerStartButton.Enabled = true; ArgumentTextBox.Enabled = true; severSettingsToolStripMenuItem.Enabled = true; }));
+                    Application.DoEvents();
+                }
+                else ValidationConanServerButton.Invoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Install/Setup Server"; severSettingsToolStripMenuItem.Enabled = false; }));
                 Application.DoEvents();
+                if (StartButton.Enabled == false) startToolStripMenuItem.Enabled = false;
+                else startToolStripMenuItem.Enabled = true;
+                if (StopButton.Enabled == false) stopToolStripMenuItem.Enabled = false;
+                else stopToolStripMenuItem.Enabled = true;
             }
-            else ValidationConanServerButton.Invoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Install/Setup Server"; severSettingsToolStripMenuItem.Enabled = false; }));
-            Application.DoEvents();
-            if (StartButton.Enabled == false) startToolStripMenuItem.Enabled = false;
-            else startToolStripMenuItem.Enabled = true;
-            if (StopButton.Enabled == false) stopToolStripMenuItem.Enabled = false;
-            else stopToolStripMenuItem.Enabled = true;
         }
 
         delegate void SetTextCallback(string text);
