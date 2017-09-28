@@ -12,8 +12,39 @@ using System.Windows.Forms;
 
 namespace FileWatcherConanWPF
 {
+    public class SettingsFormProperties
+    {
+        //dValuesFromConfig.Add("PAK_Location", config.AppSettings.Settings["PAK_Location"].Value);
+        //dValuesFromConfig.Add("PAK_Target_Location", config.AppSettings.Settings["PAK_Target_Location"].Value);
+        //dValuesFromConfig.Add("Sleep_Time", config.AppSettings.Settings["Sleep_Time"].Value);
+        //dValuesFromConfig.Add("Automaticaly_Transfer_Files", config.AppSettings.Settings["Automaticaly_Transfer_Files"].Value);
+        //dValuesFromConfig.Add("Conan_Server_Location", config.AppSettings.Settings["Conan_Server_Location"].Value);
+        //dValuesFromConfig.Add("SteamCmd_Location", config.AppSettings.Settings["SteamCmd_Location"].Value);
+        //dValuesFromConfig.Add("Validate_Conan", config.AppSettings.Settings["Validate_Conan"].Value);
+        //dValuesFromConfig.Add("Batch_Location", config.AppSettings.Settings["Batch_Location"].Value);
+        //dValuesFromConfig.Add("Arguements_Server_Start", config.AppSettings.Settings["Arguements_Server_Start"].Value);
+        
+    }
     public partial class SettingsForm : Form
     {
+        public string PakLocation
+        {
+            get { return workshopPakLocationText.Text; }
+            set { workshopPakLocationText.Text = value; }
+        }
+
+        public string PakTargetLocation
+        {
+            get { return modTargetLocationText.Text; }
+            set { modTargetLocationText.Text = value; }
+        }
+
+        public int SleepTime
+        {
+            get { return Convert.ToInt32(sleepTimeInt.Value); }
+            set { sleepTimeInt.Value = Convert.ToInt32(value); }
+        }
+
         public SettingsForm()
         {
             InitializeComponent();

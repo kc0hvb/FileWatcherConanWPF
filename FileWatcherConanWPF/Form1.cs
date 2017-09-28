@@ -92,7 +92,8 @@ namespace FileWatcherConanWPF
                 else SetText(text);
                 Application.DoEvents();
                 Dictionary<string, string> dictionary = MaPro.PullValuesFromConfig();
-                if (dictionary["Conan_Server_Location"] != "") FillCheckBoxList();
+                if (dictionary != null)
+                    if (dictionary["Conan_Server_Location"] != "") FillCheckBoxList();
             }
         }
 

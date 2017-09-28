@@ -48,36 +48,29 @@ namespace FileWatcherConanWPF
 
     public class UpdatingUI
     {
-        
+
     }
-    public class MainProgram
+    public class GettingSettings
     {
-        #region Static Functions.
-        private ObservableCollection<string> collection = new ObservableCollection<string>();
-
-        private static ConanModWatcher CMW = new ConanModWatcher();
-        
-        [DllImport("user32.dll")]
-        private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
-
-        [DllImport("user32.dll")]
-        private static extern bool SetForegroundWindow(IntPtr hWnd);
-        #endregion
-
-        #region Getting information from Configuration file.
-        public Dictionary<string, string> PullValuesFromConfig()
+        public Configuration ConfigurationLocation()
         {
-            try
+            string appPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            string configFile = Path.Combine(appPath, "Conan Exiles Server Admin.exe.config");
+            ExeConfigurationFileMap configFileMap = new ExeConfigurationFileMap();
+            configFileMap.ExeConfigFilename = configFile;
+            Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
+            return config;
+        }
+
+        public Dictionary<string, string> PullValuesFromConfig
+        {
+            get
             {
-                Dictionary<string, string> dValuesFromConfig = new Dictionary<string, string>();
-                string appPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                string configFile = Path.Combine(appPath, "Conan Exiles Server Admin.exe.config");
-                bool bIsInUse = IsFileLocked(new FileInfo(configFile));
-                if (bIsInUse == false)
+                MainProgram mainProgram = new MainProgram();
+                Configuration config = ConfigurationLocation();
+                try
                 {
-                    ExeConfigurationFileMap configFileMap = new ExeConfigurationFileMap();
-                    configFileMap.ExeConfigFilename = configFile;
-                    Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
+                    Dictionary<string, string> dValuesFromConfig = new Dictionary<string, string>();
 
                     dValuesFromConfig.Add("PAK_Location", config.AppSettings.Settings["PAK_Location"].Value);
                     dValuesFromConfig.Add("PAK_Target_Location", config.AppSettings.Settings["PAK_Target_Location"].Value);
@@ -90,18 +83,35 @@ namespace FileWatcherConanWPF
                     dValuesFromConfig.Add("Arguements_Server_Start", config.AppSettings.Settings["Arguements_Server_Start"].Value);
                     return dValuesFromConfig;
                 }
-                else return null;
+                catch
+                {
+                    return null;
+                }
             }
-            catch(Exception ex)
-            {
-                //MessageBox.Show(ex.ToString());
-                return null;
-            }
-            
+            set { }
+
         }
+    }
+
+    public class MainProgram
+    {
+        #region Static Functions.
+        private ObservableCollection<string> collection = new ObservableCollection<string>();
+
+        private static ConanModWatcher CMW = new ConanModWatcher();
+        
+        [DllImport("user32.dll")]
+        private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+        
+        GettingSettings gettingSettings = new GettingSettings();
+
         #endregion
 
-        protected virtual bool IsFileLocked(FileInfo file)
+
+        public virtual bool IsFileLocked(FileInfo file)
         {
             FileStream stream = null;
 
@@ -132,51 +142,52 @@ namespace FileWatcherConanWPF
         {
             try
             {
-                ConanModWatcher CMW = new ConanModWatcher();
-
-                Dictionary<string, string> dConfigValue = PullValuesFromConfig();
-                string sSource = dConfigValue["Conan_Server_Location"] + @"\ConanSandbox\Mods\modlist.txt";
-                string sPakSource = dConfigValue["PAK_Location"];
-                string sPakTarget = dConfigValue["PAK_Target_Location"];
-
-                string[] fileEntries = Directory.GetFiles(sPakSource, "*.*", System.IO.SearchOption.AllDirectories);
-
-                if (!Directory.Exists(sPakTarget))
+                Dictionary<string, string> dConfigValue = gettingSettings.PullValuesFromConfig;
+                if (dConfigValue != null)
                 {
-                    Directory.CreateDirectory(sPakTarget);
-                }
+                    string sSource = dConfigValue["Conan_Server_Location"] + @"\ConanSandbox\Mods\modlist.txt";
+                    string sPakSource = dConfigValue["PAK_Location"];
+                    string sPakTarget = dConfigValue["PAK_Target_Location"];
 
-                foreach (string fileName in fileEntries)
-                {
-                    if (fileName.Contains(".pak"))
+                    string[] fileEntries = Directory.GetFiles(sPakSource, "*.*", System.IO.SearchOption.AllDirectories);
+
+                    if (!Directory.Exists(sPakTarget))
                     {
-                        string sFileName = Path.GetFileName(fileName);
-                        string sFileNameDest = sPakTarget + '\\' + sFileName;
-                        if (dConfigValue["Automaticaly_Transfer_Files"] == "true")
+                        Directory.CreateDirectory(sPakTarget);
+                    }
+
+                    foreach (string fileName in fileEntries)
+                    {
+                        if (fileName.Contains(".pak"))
                         {
-                            if (File.Exists(sFileNameDest))
+                            string sFileName = Path.GetFileName(fileName);
+                            string sFileNameDest = sPakTarget + '\\' + sFileName;
+                            if (dConfigValue["Automaticaly_Transfer_Files"] == "true")
                             {
-                                FileInfo fFileInfoSource = new FileInfo(fileName);
-                                FileInfo fFileInfoDest = new FileInfo(sFileNameDest);
-                                if (fFileInfoSource.LastWriteTimeUtc > fFileInfoDest.LastWriteTimeUtc)
+                                if (File.Exists(sFileNameDest))
+                                {
+                                    FileInfo fFileInfoSource = new FileInfo(fileName);
+                                    FileInfo fFileInfoDest = new FileInfo(sFileNameDest);
+                                    if (fFileInfoSource.LastWriteTimeUtc > fFileInfoDest.LastWriteTimeUtc)
+                                    {
+                                        File.Copy(fileName, sFileNameDest, true);
+                                        collection.Add($"File: {sFileName} was updated.");
+                                    }
+
+                                }
+                                else
                                 {
                                     File.Copy(fileName, sFileNameDest, true);
-                                    collection.Add($"File: {sFileName} was updated.");
-                                }
+                                    string sFileWithExt = Path.GetFileNameWithoutExtension(fileName);
+                                    collection.Add($"File: {sFileName} did not exist but exists now.");
 
+                                }
                             }
                             else
                             {
-                                File.Copy(fileName, sFileNameDest, true);
-                                string sFileWithExt = Path.GetFileNameWithoutExtension(fileName);
-                                collection.Add($"File: {sFileName} did not exist but exists now.");
-
+                                if (File.Exists(sFileNameDest)) collection.Add($"File: {fileName} has been updated on source. Needs to be move to target.");
+                                else collection.Add($"File: {fileName} does not currently exist in target location.");
                             }
-                        }
-                        else
-                        {
-                            if (File.Exists(sFileNameDest)) collection.Add($"File: {fileName} has been updated on source. Needs to be move to target.");
-                            else collection.Add($"File: {fileName} does not currently exist in target location.");
                         }
                     }
                 }
@@ -215,7 +226,7 @@ namespace FileWatcherConanWPF
 
         public void AddingModsInText(string pCheckedValue)
         {
-            Dictionary<string, string> dConfigValue = PullValuesFromConfig();
+            Dictionary<string, string> dConfigValue = gettingSettings.PullValuesFromConfig;
             string sSource = dConfigValue["Conan_Server_Location"] + @"\ConanSandbox\Mods\modlist.txt";
             
             string checkedItems = string.Empty;
@@ -235,7 +246,7 @@ namespace FileWatcherConanWPF
 
         public void RemovingModsInText(string pCheckedValue)
         {
-            Dictionary<string, string> dConfigValue = PullValuesFromConfig();
+            Dictionary<string, string> dConfigValue = gettingSettings.PullValuesFromConfig;
             string sSource = dConfigValue["Conan_Server_Location"] + @"\ConanSandbox\Mods\modlist.txt";
 
             var tempFile = Path.GetTempFileName();
@@ -259,7 +270,7 @@ namespace FileWatcherConanWPF
         {
             bool bInstalled = false;
             Dictionary<string, string> dConfigValue = new Dictionary<string, string>();
-            dConfigValue = PullValuesFromConfig();
+            dConfigValue = gettingSettings.PullValuesFromConfig;
             Process process = new Process();
             process.StartInfo.CreateNoWindow = true;
             try
@@ -338,7 +349,7 @@ namespace FileWatcherConanWPF
 
         public void StartServer(string pArguments)
         {
-            Dictionary<string, string> dictionary = PullValuesFromConfig();
+            Dictionary<string, string> dictionary = gettingSettings.PullValuesFromConfig;
             Process process = new Process();
             if (dictionary["Conan_Server_Location"] != "")
             {
