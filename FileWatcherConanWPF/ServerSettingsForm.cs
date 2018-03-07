@@ -13,11 +13,11 @@ namespace FileWatcherConanWPF
 {
     public partial class ServerSettingsForm : Form
     {
-        private MainProgram MaPro = new MainProgram();
+        private GettingSettings Settings = new GettingSettings();
 
         public ServerSettingsForm()
         {
-            Dictionary<string, string> dictionary = MaPro.PullValuesFromConfig();
+            Dictionary<string, string> dictionary = Settings.PullValuesFromConfig;
             if (dictionary["Conan_Server_Location"] != "")
             {
                 InitializeComponent();
@@ -68,9 +68,9 @@ namespace FileWatcherConanWPF
 
         private void SavingGameIni()
         {
-            Dictionary<string, string> dictionary = MaPro.PullValuesFromConfig();
+            //Dictionary<string, string> dictionary = Settings.PullValuesFromConfig;
             string sTempFile = Path.GetTempFileName();
-            string sSourceGameIni = dictionary["Conan_Server_Location"] + @"\ConanSandbox\Saved\Config\WindowsServer\" + "Game.ini";
+            string sSourceGameIni = /*dictionary["Conan_Server_Location"] */ Settings.sConanServerLoc + @"\ConanSandbox\Saved\Config\WindowsServer\" + "Game.ini";
             File.WriteAllText(sTempFile, GameIniTextBox.Text);
             File.Delete(sSourceGameIni);
             File.Move(sTempFile, sSourceGameIni);
@@ -78,9 +78,9 @@ namespace FileWatcherConanWPF
 
         private void SavingServerSettingsIni()
         {
-            Dictionary<string, string> dictionary = MaPro.PullValuesFromConfig();
+            //Dictionary<string, string> dictionary = Settings.PullValuesFromConfig;
             string sTempFile = Path.GetTempFileName();
-            string sSourceServerIni = dictionary["Conan_Server_Location"] + @"\ConanSandbox\Saved\Config\WindowsServer\" + "ServerSettings.ini";
+            string sSourceServerIni = /*dictionary["Conan_Server_Location"] */ Settings.sConanServerLoc + @"\ConanSandbox\Saved\Config\WindowsServer\" + "ServerSettings.ini";
             List<string> sb = new List<string>();
             sb.Add("[ServerSettings]");
             using (StreamWriter sw = new StreamWriter(sTempFile))

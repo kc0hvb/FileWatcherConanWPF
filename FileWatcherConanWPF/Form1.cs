@@ -20,16 +20,17 @@ namespace FileWatcherConanWPF
     public partial class ConanModWatcher : Form
     {
         private Program Pro = new Program();
+        private GettingSettings Settings = new GettingSettings();
         private MainProgram MaPro = new MainProgram();
         private ObservableCollection<string> ocCheckedItems = new ObservableCollection<string>();
 
         public ConanModWatcher()
         {
             InitializeComponent();
-            Dictionary<string, string> dConfigValues = MaPro.PullValuesFromConfig();
-            string sConanServerInstalled = dConfigValues["Conan_Server_Location"];
+            //Dictionary<string, string> dConfigValues = Settings.PullValuesFromConfig;
+            string sConanServerInstalled = Settings.sConanServerLoc; //dConfigValues["Conan_Server_Location"];
             string sConanServerFile = sConanServerInstalled + @"\ConanSandboxServer.exe";
-            if (dConfigValues["Arguements_Server_Start"] != "") ArgumentTextBox.Text = dConfigValues["Arguements_Server_Start"];
+            if (Settings.sArguementServerStart != "") ArgumentTextBox.Text = Settings.sArguementServerStart; //(dConfigValues["Arguements_Server_Start"] != "") ArgumentTextBox.Text = dConfigValues["Arguements_Server_Start"];
             else ArgumentTextBox.Text = "-log -QueryPort=27016";
             System.Timers.Timer tButtonTimer = new System.Timers.Timer();
             tButtonTimer.Elapsed += new ElapsedEventHandler(SetInstallVerifyServer);
@@ -49,21 +50,18 @@ namespace FileWatcherConanWPF
 
         private void SetInstallVerifyServer(object source, ElapsedEventArgs e)
         {
-            Dictionary<string, string> dConfigValues = MaPro.PullValuesFromConfig();
-            if (dConfigValues != null)
+            //Dictionary<string, string> dConfigValues = Settings.PullValuesFromConfig;
+            if (Settings.sConanServerLoc != "" && File.Exists(Settings.sConanServerLoc + @"\ConanSandboxServer.exe"))//dConfigValues["Conan_Server_Location"] != ""
             {
-                if (dConfigValues["Conan_Server_Location"] != "" && File.Exists(dConfigValues["Conan_Server_Location"] + @"\ConanSandboxServer.exe"))
-                {
-                    ValidationConanServerButton.Invoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Verify Server"; ServerStartButton.Enabled = true; ArgumentTextBox.Enabled = true; severSettingsToolStripMenuItem.Enabled = true; }));
-                    Application.DoEvents();
-                }
-                else ValidationConanServerButton.Invoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Install/Setup Server"; severSettingsToolStripMenuItem.Enabled = false; }));
+                ValidationConanServerButton.Invoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Verify Server"; ServerStartButton.Enabled = true; ArgumentTextBox.Enabled = true; severSettingsToolStripMenuItem.Enabled = true; }));
                 Application.DoEvents();
-                if (StartButton.Enabled == false) startToolStripMenuItem.Enabled = false;
-                else startToolStripMenuItem.Enabled = true;
-                if (StopButton.Enabled == false) stopToolStripMenuItem.Enabled = false;
-                else stopToolStripMenuItem.Enabled = true;
             }
+            else ValidationConanServerButton.Invoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Install/Setup Server"; severSettingsToolStripMenuItem.Enabled = false; }));
+            Application.DoEvents();
+            if (StartButton.Enabled == false) startToolStripMenuItem.Enabled = false;
+            else startToolStripMenuItem.Enabled = true;
+            if (StopButton.Enabled == false) stopToolStripMenuItem.Enabled = false;
+            else stopToolStripMenuItem.Enabled = true;
         }
 
         delegate void SetTextCallback(string text);
@@ -91,9 +89,8 @@ namespace FileWatcherConanWPF
                 if (isEmpty) { }
                 else SetText(text);
                 Application.DoEvents();
-                Dictionary<string, string> dictionary = MaPro.PullValuesFromConfig();
-                if (dictionary != null)
-                    if (dictionary["Conan_Server_Location"] != "") FillCheckBoxList();
+                //Dictionary<string, string> dictionary = Settings.PullValuesFromConfig;
+                if (Settings.sConanServerLoc != null && Settings.sConanServerLoc != "") FillCheckBoxList();
             }
         }
 
@@ -183,7 +180,7 @@ namespace FileWatcherConanWPF
 
         private void button5_Click(object sender, EventArgs e)
         {
-            MaPro.AddingModsInText(null);
+             //Settings.PullValuesFromConfig = null;
         }
 
         private void button6_Click(object sender, EventArgs e)
@@ -231,9 +228,10 @@ namespace FileWatcherConanWPF
 
         private void ServerStartButton_Click(object sender, EventArgs e)
         {
-            Dictionary<string, string> dictionary = MaPro.PullValuesFromConfig();
+            //Dictionary<string, string> dictionary = Settings.PullValuesFromConfig;
             bool bValidate = false;
-            if (dictionary["Validate_Conan"] == "true") bValidate = true;
+            if (Settings.bValidateConan == true)  //dictionary["Validate_Conan"] == "true")
+                bValidate = true;
             if (ServerStartButton.Text == "Start Server")
             {
                 MaPro.SteamCMDProcess(bValidate);
@@ -311,8 +309,8 @@ namespace FileWatcherConanWPF
 
         private void CheckBoxItemsInModText()
         {
-            Dictionary<string, string> dConfigValues = MaPro.PullValuesFromConfig();
-            string[] sCheckedValues = MaPro.GetTextFromTextFile(dConfigValues);
+            //Dictionary<string, string> dConfigValues = Settings.PullValuesFromConfig;
+            string[] sCheckedValues = MaPro.GetTextFromTextFile();
             var myOtherList = modListBox.Items.Cast<String>().ToList();
             if (sCheckedValues != null)
             {
@@ -333,12 +331,12 @@ namespace FileWatcherConanWPF
 
         private void severSettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Dictionary<string, string> dictionary = MaPro.PullValuesFromConfig();
-            if (File.Exists(dictionary["Conan_Server_Location"] + @"\ConanSandbox\Saved\Config\WindowsServer\Game.ini"))
+            //Dictionary<string, string> dictionary = Settings.PullValuesFromConfig;
+            if (File.Exists(Settings.sConanServerLoc + @"\ConanSandbox\Saved\Config\WindowsServer\Game.ini"))//dictionary["Conan_Server_Location"]
             {
 
                 bool bIsRunning = MaPro.ServerIsRunning();
-                if (bIsRunning == false && dictionary["Conan_Server_Location"] != "")
+                if (bIsRunning == false && Settings.sConanServerLoc != "") //dictionary["Conan_Server_Location"] != "")
                 {
                     ServerSettingsForm form = new ServerSettingsForm();
                     form.ShowDialog();
@@ -375,24 +373,24 @@ namespace FileWatcherConanWPF
         {
             try
             {
-                Dictionary<string, string> dictionary = MaPro.PullValuesFromConfig();
-                if (dictionary["Conan_Server_Location"] != "" && !Directory.Exists(dictionary["Conan_Server_Location"] + @"\ConanSandbox\Mods\"))
+                //Dictionary<string, string> dictionary = Settings.PullValuesFromConfig;
+                if (Settings.sConanServerLoc != "" && !Directory.Exists(Settings.sConanServerLoc + @"\ConanSandbox\Mods\"))//dictionary["Conan_Server_Location"] != "" && !Directory.Exists(dictionary["Conan_Server_Location"])
                 {
-                    Directory.CreateDirectory(dictionary["Conan_Server_Location"] + @"\ConanSandbox\Mods\");
-                    string sSource = dictionary["Conan_Server_Location"] + @"\ConanSandbox\Mods\modlist.txt";
+                    Directory.CreateDirectory(/*dictionary["Conan_Server_Location"] */Settings.sConanServerLoc + @"\ConanSandbox\Mods\");
+                    string sSource = /*dictionary["Conan_Server_Location"]*/ Settings.sConanServerLoc + @"\ConanSandbox\Mods\modlist.txt";
                     if (!File.Exists(sSource))
                     {
                         StreamWriter sw = new StreamWriter(sSource);
                         sw.Close();
                     }
                 }
-                if (dictionary["Sleep_Time"] != "" && dictionary["PAK_Location"] != "" && dictionary["PAK_Target_Location"] != "")
+                if (Settings.sPakLocation != "" && Settings.sPakTargetLocation != "")  //dictionary["Sleep_Time"] != "" && dictionary["PAK_Location"] != "" && dictionary["PAK_Target_Location"] != "")
                 {
                     System.Timers.Timer aTimer = new System.Timers.Timer();
                     aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-                    aTimer.Interval = Int32.Parse(dictionary["Sleep_Time"]);
+                    aTimer.Interval = Settings.iSleepTime; //Int32.Parse(dictionary["Sleep_Time"]);
                     aTimer.Enabled = true;
-                    if (dictionary["Conan_Server_Location"] != "")
+                    if (Settings.sConanServerLoc != "")//dictionary["Conan_Server_Location"] != "")
                     {
                         FillCheckBoxList();
                         CheckBoxItemsInModText();
