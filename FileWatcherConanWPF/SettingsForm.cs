@@ -98,6 +98,8 @@ namespace FileWatcherConanWPF
             if (ValidationCheckBox.Checked == true) config.AppSettings.Settings["Validate_Conan"].Value = "true";
             else config.AppSettings.Settings["Validate_Conan"].Value = "false";
             config.Save();
+            GettingSettings Settings = new GettingSettings();
+            Settings.SettingValuesFromConfig();
 
             Application.OpenForms[1].Close();
         }
@@ -148,11 +150,12 @@ namespace FileWatcherConanWPF
 
         private void SteamCmdLocationButton_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
-            folderBrowser.SelectedPath = @"C:\";
-            if (folderBrowser.ShowDialog() == DialogResult.OK)
+            OpenFileDialog fileDialog = new OpenFileDialog();
+            fileDialog.Filter = "steamcmd|*.exe";
+            fileDialog.Multiselect = false;
+            if (fileDialog.ShowDialog() == DialogResult.OK)
             {
-                string sSteamcCmdLocation = folderBrowser.SelectedPath;
+                string sSteamcCmdLocation = fileDialog.FileName;
                 SteamCmdLocationText.Text = sSteamcCmdLocation;
             }
         }

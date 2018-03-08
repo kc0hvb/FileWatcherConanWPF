@@ -17,11 +17,11 @@ namespace FileWatcherConanWPF
 
         public ServerSettingsForm()
         {
-            Dictionary<string, string> dictionary = Settings.PullValuesFromConfig;
-            if (dictionary["Conan_Server_Location"] != "")
+            //Dictionary<string, string> dictionary = Settings.PullValuesFromConfig;
+            if (Settings.sConanServerLoc != "") //dictionary["Conan_Server_Location"] != "")
             {
                 InitializeComponent();
-                string sServerSource = dictionary["Conan_Server_Location"] + @"\ConanSandbox\Saved\Config\WindowsServer\";
+                string sServerSource = /*dictionary["Conan_Server_Location"]*/ Settings.sConanServerLoc + @"\ConanSandbox\Saved\Config\WindowsServer\";
                 string sGameIniFile = sServerSource + "Game.ini";
                 string sServerSettings = sServerSource + "ServerSettings.ini";
                 AddingToList(sGameIniFile);

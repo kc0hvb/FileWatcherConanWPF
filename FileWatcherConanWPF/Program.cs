@@ -27,23 +27,23 @@ namespace FileWatcherConanWPF
             Application.Run(new ConanModWatcher());
         }
 
-    public ObservableCollection<string> MainPortion()
+        public ObservableCollection<string> MainPortion()
         {
             MainProgram MP = new MainProgram();
             try
-            {                
+            {
                 var value = MP.ProcessFileWatcher();
                 return value;
             }
             catch (Exception ex)
-            {                
+            {
                 MP.ErrorLogCreation(ex);
                 var lTextBox = new ObservableCollection<string>();
                 return lTextBox;
             }
         }
 
-        
+
     }
 
     public class UpdatingUI
@@ -53,8 +53,8 @@ namespace FileWatcherConanWPF
     public class GettingSettings
     {
 
-        public string sPakLocation {get; set;}
-        public string sPakTargetLocation { get; set;}
+        public string sPakLocation { get; set; }
+        public string sPakTargetLocation { get; set; }
         public int iSleepTime { get; set; }
         public bool bAutomaticallyTransferFiles { get; set; }
         public string sConanServerLoc { get; set; }
@@ -76,43 +76,37 @@ namespace FileWatcherConanWPF
 
         public void SettingValuesFromConfig()
         {
-                Configuration config = ConfigurationLocation();
-                try
-                {
-                    //dValuesFromConfig.Add("PAK_Location", config.AppSettings.Settings["PAK_Location"].Value);
-                    //dValuesFromConfig.Add("PAK_Target_Location", config.AppSettings.Settings["PAK_Target_Location"].Value);
-                    //dValuesFromConfig.Add("Sleep_Time", config.AppSettings.Settings["Sleep_Time"].Value);
-                    //dValuesFromConfig.Add("Automaticaly_Transfer_Files", config.AppSettings.Settings["Automaticaly_Transfer_Files"].Value);
-                    //dValuesFromConfig.Add("Conan_Server_Location", config.AppSettings.Settings["Conan_Server_Location"].Value);
-                    //dValuesFromConfig.Add("SteamCmd_Location", config.AppSettings.Settings["SteamCmd_Location"].Value);
-                    //dValuesFromConfig.Add("Validate_Conan", config.AppSettings.Settings["Validate_Conan"].Value);
-                    //dValuesFromConfig.Add("Batch_Location", config.AppSettings.Settings["Batch_Location"].Value);
-                    //dValuesFromConfig.Add("Arguements_Server_Start", config.AppSettings.Settings["Arguements_Server_Start"].Value);
+            Configuration config = ConfigurationLocation();
+            try
+            {
+                int result;
+                sPakLocation = config.AppSettings.Settings["PAK_Location"].Value.ToString();
+                sPakTargetLocation = config.AppSettings.Settings["PAK_Target_Location"].Value.ToString();
+                if (Int32.TryParse(config.AppSettings.Settings["Sleep_Time"].Value.ToString(), out result))
+                    iSleepTime = Int32.Parse(config.AppSettings.Settings["Sleep_Time"].Value.ToString());
+                else
+                    iSleepTime = 0;
 
-                    sPakLocation = config.AppSettings.Settings["PAK_Location"].Value.ToString();
-                    sPakTargetLocation = config.AppSettings.Settings["PAK_Target_Location"].Value.ToString();
-                    iSleepTime = Int16.Parse(config.AppSettings.Settings["Sleep_Time"].Value.ToString());
-                    if (config.AppSettings.Settings["Automaticaly_Transfer_Files"].Value.ToString() == "True")
-                        bAutomaticallyTransferFiles = true;
-                    else
-                        bAutomaticallyTransferFiles = false;
-                    sConanServerLoc = config.AppSettings.Settings["Conan_Server_Location"].Value.ToString();
-                    sSteamCmdLoc = config.AppSettings.Settings["Conan_Server_Location"].Value.ToString();
-                    if (config.AppSettings.Settings["Validate_Conan"].Value.ToString() == "True")
-                        bValidateConan = true;
-                    else
-                        bValidateConan = false;
-                    sBatchLoc = config.AppSettings.Settings["Batch_Location"].Value.ToString();
-                    sArguementServerStart = config.AppSettings.Settings["Arguements_Server_Start"].Value.ToString();
-                    
-                }
-                catch
-                {
-                }
+                if (config.AppSettings.Settings["Automaticaly_Transfer_Files"].Value.ToString() == "True")
+                    bAutomaticallyTransferFiles = true;
+                else
+                    bAutomaticallyTransferFiles = false;
+                sConanServerLoc = config.AppSettings.Settings["Conan_Server_Location"].Value.ToString();
+                sSteamCmdLoc = config.AppSettings.Settings["SteamCmd_Location"].Value.ToString();
+                if (config.AppSettings.Settings["Validate_Conan"].Value.ToString() == "True")
+                    bValidateConan = true;
+                else
+                    bValidateConan = false;
+                sBatchLoc = config.AppSettings.Settings["Batch_Location"].Value.ToString();
+                sArguementServerStart = config.AppSettings.Settings["Arguements_Server_Start"].Value.ToString();
+
             }
-
+            catch
+            {
+            }
         }
     }
+}
 
     public class MainProgram
     {
@@ -127,7 +121,8 @@ namespace FileWatcherConanWPF
         [DllImport("user32.dll")]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
 
-        #endregion
+    private FileWatcherConanWPF.GettingSettings Settings = new FileWatcherConanWPF.GettingSettings();
+    #endregion
 
 
     public virtual bool IsFileLocked(FileInfo file)
@@ -163,9 +158,9 @@ namespace FileWatcherConanWPF
             {
                 //Dictionary<string, string> dConfigValue = GettingSettings.PullValuesFromConfig;
                 
-                    string sSource = dConfigValue["Conan_Server_Location"] + @"\ConanSandbox\Mods\modlist.txt";
-                    string sPakSource = dConfigValue["PAK_Location"];
-                    string sPakTarget = dConfigValue["PAK_Target_Location"];
+                    string sSource = /*dConfigValue["Conan_Server_Location"]*/ Settings.sConanServerLoc + @"\ConanSandbox\Mods\modlist.txt";
+            string sPakSource = Settings.sPakLocation; //dConfigValue["PAK_Location"];
+            string sPakTarget = Settings.sPakTargetLocation; //dConfigValue["PAK_Target_Location"];
 
                     string[] fileEntries = Directory.GetFiles(sPakSource, "*.*", System.IO.SearchOption.AllDirectories);
 
@@ -180,7 +175,7 @@ namespace FileWatcherConanWPF
                 {
                     string sFileName = Path.GetFileName(fileName);
                     string sFileNameDest = sPakTarget + '\\' + sFileName;
-                    if (dConfigValue["Automaticaly_Transfer_Files"] == "true")
+                    if (Settings.bAutomaticallyTransferFiles) //dConfigValue["Automaticaly_Transfer_Files"] == "true")
                     {
                         if (File.Exists(sFileNameDest))
                         {
@@ -222,10 +217,10 @@ namespace FileWatcherConanWPF
         public string[] GetTextFromTextFile()
         {
 
-            string sSource =  + @"\ConanSandbox\Mods\modlist.txt";
-            string sSourceFolder = pSource["Conan_Server_Location"] + @"\ConanSandbox\Mods\";
+            string sSource = Settings.sConanServerLoc + @"\ConanSandbox\Mods\modlist.txt";
+            string sSourceFolder = /*pSource["Conan_Server_Location"]*/ Settings.sConanServerLoc + @"\ConanSandbox\Mods\";
             string[] lines = null;
-            if (pSource["Conan_Server_Location"] != "")
+            if (Settings.sConanServerLoc != "")//(pSource["Conan_Server_Location"] != "")
             {
                 if (!Directory.Exists(sSourceFolder)) Directory.CreateDirectory(sSourceFolder);
                 if (!File.Exists(sSource))
@@ -244,14 +239,14 @@ namespace FileWatcherConanWPF
 
         public void AddingModsInText(string pCheckedValue)
         {
-            Dictionary<string, string> dConfigValue = gettingSettings.PullValuesFromConfig;
-            string sSource = dConfigValue["Conan_Server_Location"] + @"\ConanSandbox\Mods\modlist.txt";
+            //Dictionary<string, string> dConfigValue = gettingSettings.PullValuesFromConfig;
+            string sSource = /*dConfigValue["Conan_Server_Location"]*/ Settings.sConanServerLoc + @"\ConanSandbox\Mods\modlist.txt";
             
             string checkedItems = string.Empty;
             if (!File.Exists(sSource)) File.Create(sSource).Close();
             if (File.Exists(sSource))
             {
-                string[] collection2 = GetTextFromTextFile(dConfigValue);
+                string[] collection2 = GetTextFromTextFile();
                 if (!collection2.Contains(pCheckedValue))
                 {
                     StreamWriter tw = File.AppendText(sSource);
@@ -264,8 +259,8 @@ namespace FileWatcherConanWPF
 
         public void RemovingModsInText(string pCheckedValue)
         {
-            Dictionary<string, string> dConfigValue = gettingSettings.PullValuesFromConfig;
-            string sSource = dConfigValue["Conan_Server_Location"] + @"\ConanSandbox\Mods\modlist.txt";
+            //Dictionary<string, string> dConfigValue = gettingSettings.PullValuesFromConfig;
+            string sSource = /*dConfigValue["Conan_Server_Location"]*/ Settings.sConanServerLoc + @"\ConanSandbox\Mods\modlist.txt";
 
             var tempFile = Path.GetTempFileName();
             string[] linesToKeep = File.ReadAllLines(sSource);
@@ -287,22 +282,22 @@ namespace FileWatcherConanWPF
         public bool SteamCMDProcess(bool bValidationEnable)
         {
             bool bInstalled = false;
-            Dictionary<string, string> dConfigValue = new Dictionary<string, string>();
-            dConfigValue = gettingSettings.PullValuesFromConfig;
+            //Dictionary<string, string> dConfigValue = new Dictionary<string, string>();
+            //dConfigValue = gettingSettings.PullValuesFromConfig;
             Process process = new Process();
             process.StartInfo.CreateNoWindow = true;
             try
             {
-                if (dConfigValue["SteamCmd_Location"] != "")
+                if (Settings.sSteamCmdLoc != "") //(dConfigValue["SteamCmd_Location"] != "")
                 {
-                    process.StartInfo.FileName = (dConfigValue["SteamCmd_Location"]);
-                    string sConanServerLocation = dConfigValue["Conan_Server_Location"];
-                    if (dConfigValue["Conan_Server_Location"] == "")
+                process.StartInfo.FileName = Settings.sSteamCmdLoc; //(dConfigValue["SteamCmd_Location"]);
+                string sConanServerLocation = Settings.sConanServerLoc; //dConfigValue["Conan_Server_Location"];
+                    if (Settings.sConanServerLoc == "") //(dConfigValue["Conan_Server_Location"] == "")
                     {
                         string sMessage = "Please Setup the location of the server in settings.";
                         process.StartInfo.Arguments = "";
                         MessageBox.Show(sMessage);
-                        SettingsForm form = new SettingsForm();
+                        FileWatcherConanWPF.SettingsForm form = new FileWatcherConanWPF.SettingsForm();
                         form.Show();
                     }
                     else
@@ -342,13 +337,13 @@ namespace FileWatcherConanWPF
                         string sMessage = "Please select a location for the server.";
                         process.StartInfo.Arguments = "";
                         MessageBox.Show(sMessage);
-                        SettingsForm form = new SettingsForm();
+                        FileWatcherConanWPF.SettingsForm form = new FileWatcherConanWPF.SettingsForm();
                         form.Show();
                     }
                     else
                     {
                         if (bValidationEnable == true) process.StartInfo.Arguments = $" +login anonymous +force_install_dir {sConanServerLocation} +app_update 443030 validate +exit";
-                        else process.StartInfo.Arguments = $" +login anonymous +force_install_dir {sConanServerLocation} +app_update 443030 +exit";
+                        else process.StartInfo.Arguments = $" +login anonymous +force_install_dir " +'"' + sConanServerLocation + '"' + " +app_update 443030 +exit";
                     }
                     if (process.StartInfo.Arguments != "")
                     {
@@ -367,13 +362,13 @@ namespace FileWatcherConanWPF
 
         public void StartServer(string pArguments)
         {
-            Dictionary<string, string> dictionary = gettingSettings.PullValuesFromConfig;
+            //Dictionary<string, string> dictionary = gettingSettings.PullValuesFromConfig;
             Process process = new Process();
-            if (dictionary["Conan_Server_Location"] != "")
+            if (Settings.sConanServerLoc != "")//(dictionary["Conan_Server_Location"] != "")
             {
-                process.StartInfo.FileName = dictionary["Conan_Server_Location"] + @"\ConanSandboxServer.exe";
+                process.StartInfo.FileName = /*dictionary["Conan_Server_Location"]*/ Settings.sConanServerLoc + @"\ConanSandboxServer.exe";
                 process.StartInfo.Arguments = pArguments; //"-log -MULTIHOME=192.168.0.103 -QueryPort=27016";
-                process.StartInfo.WorkingDirectory = Path.GetDirectoryName(dictionary["Conan_Server_Location"]);
+            process.StartInfo.WorkingDirectory = Path.GetDirectoryName(Settings.sConanServerLoc); //dictionary["Conan_Server_Location"]);
                 process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 process.Start();
             }
