@@ -52,6 +52,7 @@ namespace FileWatcherConanWPF
         private void SetInstallVerifyServer(object source, ElapsedEventArgs e)
         {
             //Dictionary<string, string> dConfigValues = Settings.PullValuesFromConfig;
+            Settings.SettingValuesFromConfig();
             if (Settings.sConanServerLoc != "" && File.Exists(Settings.sConanServerLoc + @"\ConanSandboxServer.exe"))//dConfigValues["Conan_Server_Location"] != ""
             {
                 ValidationConanServerButton.Invoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Verify Server"; ServerStartButton.Enabled = true; ArgumentTextBox.Enabled = true; severSettingsToolStripMenuItem.Enabled = true; }));
@@ -230,6 +231,7 @@ namespace FileWatcherConanWPF
         private void ServerStartButton_Click(object sender, EventArgs e)
         {
             //Dictionary<string, string> dictionary = Settings.PullValuesFromConfig;
+            Settings.SettingValuesFromConfig();
             bool bValidate = false;
             if (Settings.bValidateConan == true)  //dictionary["Validate_Conan"] == "true")
                 bValidate = true;
@@ -250,6 +252,7 @@ namespace FileWatcherConanWPF
         {
             string sSteamCmd = "";
             string sServerLoc = "";
+            Settings.SettingValuesFromConfig();
             if (ValidationConanServerButton.Text.ToString() == "Install/Setup Server")
             {
                 string appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);

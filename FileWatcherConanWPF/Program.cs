@@ -87,13 +87,13 @@ namespace FileWatcherConanWPF
                 else
                     iSleepTime = 0;
 
-                if (config.AppSettings.Settings["Automaticaly_Transfer_Files"].Value.ToString() == "True")
+                if (config.AppSettings.Settings["Automaticaly_Transfer_Files"].Value.ToString().Equals("True", StringComparison.InvariantCultureIgnoreCase))
                     bAutomaticallyTransferFiles = true;
                 else
                     bAutomaticallyTransferFiles = false;
                 sConanServerLoc = config.AppSettings.Settings["Conan_Server_Location"].Value.ToString();
                 sSteamCmdLoc = config.AppSettings.Settings["SteamCmd_Location"].Value.ToString();
-                if (config.AppSettings.Settings["Validate_Conan"].Value.ToString() == "True")
+                if (config.AppSettings.Settings["Validate_Conan"].Value.ToString().Equals("True", StringComparison.InvariantCultureIgnoreCase))
                     bValidateConan = true;
                 else
                     bValidateConan = false;
@@ -151,23 +151,23 @@ namespace FileWatcherConanWPF
             return false;
         }
 
-        #region The Actual file watching and copying of Mod files.
-        public ObservableCollection<string> ProcessFileWatcher()
+    #region The Actual file watching and copying of Mod files.
+    public ObservableCollection<string> ProcessFileWatcher()
+    {
+        try
         {
-            try
-            {
-                //Dictionary<string, string> dConfigValue = GettingSettings.PullValuesFromConfig;
-                
-                    string sSource = /*dConfigValue["Conan_Server_Location"]*/ Settings.sConanServerLoc + @"\ConanSandbox\Mods\modlist.txt";
+            //Dictionary<string, string> dConfigValue = GettingSettings.PullValuesFromConfig;
+            Settings.SettingValuesFromConfig();
+            string sSource = /*dConfigValue["Conan_Server_Location"]*/ Settings.sConanServerLoc + @"\ConanSandbox\Mods\modlist.txt";
             string sPakSource = Settings.sPakLocation; //dConfigValue["PAK_Location"];
             string sPakTarget = Settings.sPakTargetLocation; //dConfigValue["PAK_Target_Location"];
 
-                    string[] fileEntries = Directory.GetFiles(sPakSource, "*.*", System.IO.SearchOption.AllDirectories);
+            string[] fileEntries = Directory.GetFiles(sPakSource, "*.*", System.IO.SearchOption.AllDirectories);
 
-                    if (!Directory.Exists(sPakTarget))
-                    {
-                        Directory.CreateDirectory(sPakTarget);
-                    }
+            if (!Directory.Exists(sPakTarget))
+            {
+                Directory.CreateDirectory(sPakTarget);
+            }
 
             foreach (string fileName in fileEntries)
             {
@@ -203,14 +203,14 @@ namespace FileWatcherConanWPF
                     }
                 }
             }
-                
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            return collection;
+
         }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.ToString());
+        }
+        return collection;
+    }
         #endregion
 
         #region Getting Adding and Removing information from Text.
@@ -286,6 +286,7 @@ namespace FileWatcherConanWPF
             //dConfigValue = gettingSettings.PullValuesFromConfig;
             Process process = new Process();
             process.StartInfo.CreateNoWindow = true;
+            Settings.SettingValuesFromConfig();
             try
             {
                 if (Settings.sSteamCmdLoc != "") //(dConfigValue["SteamCmd_Location"] != "")
@@ -302,8 +303,8 @@ namespace FileWatcherConanWPF
                     }
                     else
                     {
-                        if (bValidationEnable == true) process.StartInfo.Arguments = $" +login anonymous +force_install_dir {sConanServerLocation} +app_update 443030 validate +exit";
-                        else process.StartInfo.Arguments = $" +login anonymous +force_install_dir {sConanServerLocation} +app_update 443030 +exit";
+                        if (bValidationEnable == true) process.StartInfo.Arguments = " +login anonymous +force_install_dir " + '"' + sConanServerLocation + '"' + "\\ +app_update 443030 validate +exit";
+                        else process.StartInfo.Arguments = " +login anonymous +force_install_dir " + '"' + sConanServerLocation + '"' + "\\ +app_update 443030 +exit";
                     }
                     if (process.StartInfo.Arguments != "")
                     {

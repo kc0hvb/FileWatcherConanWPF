@@ -72,6 +72,8 @@ namespace FileWatcherConanWPF
                 else transferFilesCheck.Checked = false;
                 ConanServerLocationText.Text = config.AppSettings.Settings["Conan_Server_Location"].Value;
                 SteamCmdLocationText.Text = config.AppSettings.Settings["SteamCmd_Location"].Value;
+                if (config.AppSettings.Settings["Validate_Conan"].Value == "true") ValidationCheckBox.Checked = true;
+                else ValidationCheckBox.Checked = false;
             }
             catch (Exception ex)
             {
