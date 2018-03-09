@@ -27,7 +27,6 @@ namespace FileWatcherConanWPF
         public ConanModWatcher()
         {
             InitializeComponent();
-            Settings.SettingValuesFromConfig();
             //Dictionary<string, string> dConfigValues = Settings.PullValuesFromConfig;
             string sConanServerInstalled = Settings.sConanServerLoc; //dConfigValues["Conan_Server_Location"];
             string sConanServerFile = sConanServerInstalled + @"\ConanSandboxServer.exe";
@@ -52,7 +51,6 @@ namespace FileWatcherConanWPF
         private void SetInstallVerifyServer(object source, ElapsedEventArgs e)
         {
             //Dictionary<string, string> dConfigValues = Settings.PullValuesFromConfig;
-            Settings.SettingValuesFromConfig();
             if (Settings.sConanServerLoc != "" && File.Exists(Settings.sConanServerLoc + @"\ConanSandboxServer.exe"))//dConfigValues["Conan_Server_Location"] != ""
             {
                 ValidationConanServerButton.Invoke(new MethodInvoker(() => { ValidationConanServerButton.Text = "Verify Server"; ServerStartButton.Enabled = true; ArgumentTextBox.Enabled = true; severSettingsToolStripMenuItem.Enabled = true; }));
@@ -231,7 +229,6 @@ namespace FileWatcherConanWPF
         private void ServerStartButton_Click(object sender, EventArgs e)
         {
             //Dictionary<string, string> dictionary = Settings.PullValuesFromConfig;
-            Settings.SettingValuesFromConfig();
             bool bValidate = false;
             if (Settings.bValidateConan == true)  //dictionary["Validate_Conan"] == "true")
                 bValidate = true;
@@ -250,9 +247,6 @@ namespace FileWatcherConanWPF
 
         private void ValidationConanServerButton_Click(object sender, EventArgs e)
         {
-            string sSteamCmd = "";
-            string sServerLoc = "";
-            Settings.SettingValuesFromConfig();
             if (ValidationConanServerButton.Text.ToString() == "Install/Setup Server")
             {
                 string appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -261,31 +255,24 @@ namespace FileWatcherConanWPF
                 configFileMap.ExeConfigFilename = configFile;
                 Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
 
-                if (Settings.sSteamCmdLoc == "")
+                string sSteamCmd = "";
+                string sServerLoc = "";
+                MessageBox.Show("Please select the location of SteamCmd File.");
+                OpenFileDialog fileDialog = new OpenFileDialog();
+                if (fileDialog.ShowDialog() == DialogResult.OK)
                 {
+                    sSteamCmd = fileDialog.FileName;
+                }
+                MessageBox.Show("Please select the location of the Server");
+                using (var fbd = new FolderBrowserDialog())
+                {
+                    DialogResult result = fbd.ShowDialog();
 
-                    MessageBox.Show("Please select the location of SteamCmd File.");
-                    OpenFileDialog fileDialog = new OpenFileDialog();
-                    if (fileDialog.ShowDialog() == DialogResult.OK)
+                    if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
                     {
-                        sSteamCmd = fileDialog.FileName;
+                        sServerLoc = fbd.SelectedPath;                        
                     }
                 }
-                else sSteamCmd = Settings.sSteamCmdLoc;
-                if (Settings.sConanServerLoc == "")
-                {
-                    MessageBox.Show("Please select the location of the Server");
-                    using (var fbd = new FolderBrowserDialog())
-                    {
-                        DialogResult result = fbd.ShowDialog();
-
-                        if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
-                        {
-                            sServerLoc = fbd.SelectedPath;
-                        }
-                    }
-                }
-                else sServerLoc = Settings.sConanServerLoc;
                 if (sServerLoc.ToString() != "") config.AppSettings.Settings["Conan_Server_Location"].Value = sServerLoc.ToString();
                 if (sSteamCmd.ToString() != "") config.AppSettings.Settings["SteamCmd_Location"].Value = sSteamCmd.ToString();
                 config.Save();
